@@ -1,0 +1,108 @@
+body {
+    background-color: lightskyblue;
+    margin: 0;
+    padding: 0;
+    font-family:"Open Sans", sans-serif;
+}
+
+
+.nav {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    position:fixed;
+    border: 1px solid black;
+    list-style: none;
+    background-color: lightgray;
+    top: 0;
+    
+}
+
+.nav li {
+    
+    float:left;
+    display:block;
+    border-right: 1px solid black;
+    padding: 10px;
+    text-align: center;
+    margin: 0;
+}
+
+.nav li:hover {
+    background-color: gray;
+}
+
+.main {
+    margin-top: 42px;
+    white-space: nowrap;
+}
+
+.lol {
+    list-style: none;
+    padding: 0 10px;
+}
+
+.lol li {
+    display: inline-block;
+    width: 200px;
+    min-height: 50px;
+    background-color: lightgray;
+    margin-top: 10px;
+    border-radius: 0.3em;
+    border: 1px black solid;
+    text-align: center;
+    margin: 10px;
+    
+}
+
+.card {
+    width: 60%;
+    margin: 0 auto;
+    border: 1px black solid;
+    background-color: ghostwhite;
+    padding-left: 10px;
+    border-radius: 0.3em;
+}
+
+.card h3 {
+    margin: 0;
+}
+
+#label a {
+    color: black;
+    text-decoration: none;
+}
+
+#label {
+    margin: 0;
+    padding: 0;
+    display:inline-block;
+    list-style: none;
+}
+
+#label li {
+    display: inline-block;
+    border-radius: 0.3em;
+    padding: 5px;
+}
+
+.inline {
+    display:inline-block;
+}
+
+.member-list a {
+    display: inline-block;
+    color: black;
+    padding: 8px;
+    margin: 2px;
+    background-color: palegreen;
+    text-decoration: none;
+    border-radius: 0.3em;
+}
+
+.member-list a:hover {
+    background-color: limegreen;
+}
+
+
+

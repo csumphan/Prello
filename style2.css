@@ -1,0 +1,30 @@
+body {
+    background-color: lightskyblue;
+    margin: 0;
+    padding: 0;
+    font-family:"Open Sans", sans-serif;
+}
+
+.board-list {
+    background-color: lightgray;
+    border: 1px solid black;
+    width: 60%;
+    margin: 5em auto;
+    text-align: center;
+}
+
+li {
+
+    background-color: ghostwhite;
+    list-style: none;
+    width: 80%;
+    border: 1px black solid;
+    margin: 1em auto;
+    padding: 1em 0;
+    border-radius: 1em;
+    
+}
+
+button {
+    margin: 1em;
+}

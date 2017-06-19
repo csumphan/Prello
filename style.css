@@ -1,0 +1,33 @@
+body {
+    background-color: lightskyblue;
+    margin: 0;
+    padding: 0;
+    font-family:"Open Sans", sans-serif;
+}
+
+.user-form {
+    width: 60%;
+
+    margin: 5em auto;
+    
+}
+.reg-login {
+    display:inline-block;
+    vertical-align: top;
+    background-color: lightgray;
+    border: 1px black solid;
+    width: 300px;
+    padding: 1em;
+    border-radius: 1em;
+    text-align: center;
+}
+form {
+    margin: auto;
+    padding: 0 auto;
+    
+    
+}
+input {
+    display: block;
+    margin: 10px auto;
+}
