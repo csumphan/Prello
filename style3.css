@@ -22,7 +22,7 @@ body {
     
 }
 
-.nav li {
+.nav > li {
     
     float:left;
     display:block;
@@ -41,7 +41,7 @@ body {
     
 }
 
-.nav li:hover {
+.nav > li:hover {
     background-color: gray;
 }
 
@@ -154,5 +154,48 @@ body {
     background-color: limegreen;
 }
 
+.board-list {
+    position: fixed;
+    top: 39px;
+    left: 105px;
+    width: 18%;
+    border: 1px solid black;
+    background-color: lightgray;
+    display:none;
+}
+
+.board-list h2 {
+    text-align: center;
+}
+.board-list ul{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.board-list li {
+    margin: 5px;
+    padding: 5px;
+    border-radius: 0.3em;
+    background-color: ghostwhite;
+}
+
+.board-list p {
+    text-align: center;
+    margin: 10px 5px;
+    padding: 5px;
+    border-radius: 0.3em;
+    background-color: orangered;
+}
+
+
+
+
+
+
+
+.hover-list:hover .board-list{
+    display: block;
+}
 
 
