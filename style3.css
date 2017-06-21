@@ -207,12 +207,29 @@ body {
 
 
 
-
-
-
-
-.hover-list:hover .board-list{
+.hover-list:hover .board-list, .menu-list{
     display: block;
+}
+
+.hover-list:hover .menu-list{
+    display: block;
+}
+
+.menu-list {
+    position:fixed;
+    left: 560px;
+    top: 39px;
+    border: 1px solid black;
+    background-color: lightgray;
+    width: 300px;
+    text-align: center;
+    display:none;
+   
+}
+
+.menu-list h3 {
+    background-color: ghostwhite;
+    padding: 5px 0;
 }
 
 
