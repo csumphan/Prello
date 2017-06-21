@@ -52,65 +52,14 @@
                 To-Do
                 
                 <ul class="card-list">
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
                     
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
                     
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
                 </ul>
                 
-                <p class="add-card">Add Card</p>
+                <p class="add-card clickable">Add Card</p>
             </li>
-            <li>In Progress
-                <ul class="card-list">
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                    <li><a href="#">Card 1</a></li>
-                </ul>
-                <p class="add-card">Add Card</p>
-            </li>
-            <li>
-                Completed
-                <p class="add-card">Add Card</p>
-            </li>
-            <li>Future Ideas</li>
-            <li>adfadfad</li>
-            <li>afadsfasdfadsf</li>
-            <li>dsfweuruwej</li>
-            <li>Add List</li>
+            
+            <li id="addList" class="clickable">Add List</li>
         </ul>
     </div>
     
@@ -146,15 +95,55 @@
         
         <div class="comment">
         <h3>Add Comment</h3>
-        <textarea placeholder="Write a Comment..."></textarea>
+        <textarea class="comment-box" placeholder="Write a Comment..."></textarea>
         <button>Send</button>
         </div>
     
     </div>
     
+    <div class="card">
+        <h2 class="inline">Title</h2>
+        <h4 class="inline remove">Remove Card</h4>
+        <h3>Due Date: July 4, 2017 @ 12:00 PM</h3>
+        <h5 class="inline">Label: </h5>
+        <ul id="label">
+            <li style="background-color: red">Bug</li>
+            <li style="background-color: skyblue">Feature</li>
+            <li style="background-color: yellow">Improvement</li>
+            <li style="background-color: lightgrey">
+                <a href="#">Add Label</a></li>
+        </ul>
+        <br>
+        
+        <div class="member-list">
+        <h3 class="inline">Members:</h3>
+        <a href="#">Chanun Sumphanphaisal</a>
+        <a href="#">John Doe</a>
+        <a href="#">Darth Vader</a>
+        <a href="#" style="background-color: lightgrey">Add Member</a>
+        </div>
+        
+        <div class="description">
+            <h3>Description</h3>
 
+            <p class="description-text">Natural sunscreens help morning glory seeds survive doses of ultraviolet (UV) radiation that would burn most humans to a crisp, according to a new study. The hardy seeds of the common flowering plant would probably even survive a voyage between planets, say the researchers. This might help researchers decide which species to send on future missions to Mars, a place that is bombarded with UV light because of its thin atmosphere. It also validates the concept of panspermia, the idea that life might have hopscotched through our solar system—or others—by hitching a ride on asteroids or comets.</p>
+            
+            <a class="edit" href="#">Edit Description..</a>
+        </div>
+        
+        <div class="comment">
+        <h3>Add Comment</h3>
+        <textarea class="comment-box" placeholder="Write a Comment..."></textarea>
+        <button>Send</button>
+        </div>
     
-
+    </div>
+    
+    <div id='bg'>
+    
+    </div>
+    
+    <script src="script3.js"></script>
     
     </body>
 </html>

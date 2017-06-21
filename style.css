@@ -5,18 +5,28 @@ body {
     font-family:"Open Sans", sans-serif;
 }
 
+.title {
+    margin: 0;
+    padding: 0;
+    padding-top: 5%;
+    text-align: center;
+    font-family: Rockwell;
+    font-size: 80px;
+}
+
 .user-form {
     width: 60%;
-
     margin: 5em auto;
+    padding-left: 5%;
     
 }
 .reg-login {
+    margin: 0;
     display:inline-block;
     vertical-align: top;
     background-color: lightgray;
     border: 1px black solid;
-    width: 300px;
+    width: 250px;
     padding: 1em;
     border-radius: 1em;
     text-align: center;
@@ -24,8 +34,20 @@ body {
 form {
     margin: auto;
     padding: 0 auto;
-    
-    
+
+}
+
+.remember-me input {
+    margin: 0;
+    padding: 0;
+    display:inline-block;
+}
+
+.remember-me p{
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-size: 10px;
 }
 input {
     display: block;

@@ -6,34 +6,38 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     </head>
 <body>
+    <h1 class="title">Prello</h1>
     <div class="user-form">
     <div class="reg-login">
         <h2>Create Account</h2>
-        <form>
+        <form id="create-account">
             Username:
-            <input type="text" name="username">
+            <input type="text" name="username" required>
             Email:
-            <input type="email" name="email"> 
+            <input type="email" name="email" required> 
             Password:
-            <input type="password" name="password">
+            <input id="password-create" type="password" name="password">
             Confirm Password:
-            <input type="password" name="confirm">
+            <input id="confirm=create" type="password" name="confirm">
             <input type="submit">
     </form>
     </div>
     
         <div class="reg-login">
         <h2>Login</h2>
-        <form>
+        <form id="login">
             Username:
-            <input type="text" name="username-login">
+            <input type="text" name="username-login" required>
             Password:
-            <input type="password" name="password-login">
+            <input type="password" name="password-login" required>
+            <div class="remember-me">
+                <p>Remember Me</p> <input type="checkbox" name="rem-me">
+            </div>
             <input type="submit">
     </form>
     </div>
     </div>
 
-    
+    <script src="script.js"></script>
     </body>
 </html>
