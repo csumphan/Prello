@@ -12,7 +12,10 @@ body {
     margin: 5em auto;
     text-align: center;
 }
-
+ul {
+    padding: 0;
+    margin: 0;
+}
 li {
 
     background-color: ghostwhite;
@@ -23,6 +26,10 @@ li {
     padding: 1em 0;
     border-radius: 1em;
     
+}
+
+li:hover {
+   background-color: gray;
 }
 
 button {
