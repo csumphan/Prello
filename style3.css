@@ -75,7 +75,7 @@ body {
 .card-list {
     padding: 0;
     margin: 5px;
-    max-height: 500px;
+    max-height: 460px;
     overflow: scroll;
 }
 .card-list li {
@@ -98,6 +98,14 @@ body {
     
 }
 
+.add-card {
+    margin: 5px 0;
+    padding: 5px 0;
+}
+.add-card:hover {
+    background-color: gray;
+}
+
 .card {
 
     width: 50%;
@@ -106,6 +114,15 @@ body {
     background-color: ghostwhite;
     padding-left: 10px;
     border-radius: 0.3em;
+}
+
+.remove {
+    float: right;
+    margin: 10px;
+    padding: 5px;
+    border: 1px black solid;
+    border-radius: 0.3em;
+    background-color: orangered;
 }
 
 .card h3 {
@@ -158,7 +175,7 @@ body {
     position: fixed;
     top: 39px;
     left: 105px;
-    width: 18%;
+    width: 200px;
     border: 1px solid black;
     background-color: lightgray;
     display:none;
