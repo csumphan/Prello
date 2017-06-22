@@ -5,9 +5,11 @@ body {
     background-color: lightskyblue;
     margin: 0;
     padding: 0;
-    font-family:"Open Sans", sans-serif;
+    font-family:"Helvetica","Open Sans", sans-serif;
     height: 100%;
 }
+
+ 
 
 
 .nav {
@@ -69,7 +71,7 @@ body {
     text-align: center;
     margin: 10px;
     max-height: 550px;
-    
+    overflow: hidden;
     
 }
 
@@ -80,10 +82,11 @@ body {
     background-color: gray;
 }
 .card-list {
-    padding: 0;
-    margin: 5px;
+    padding: 0px;
+    margin: 0px;
+    width: auto;
     max-height: 460px;
-    overflow: scroll;
+    overflow: auto;
 }
 .card-list li {
     list-style: none;
@@ -125,16 +128,7 @@ body {
     top:10%;
     left: 25%;
     z-index: 2;
-    display:none;
-}
-
-.remove {
-    float: right;
-    margin: 10px;
-    padding: 5px;
-    border: 1px black solid;
-    border-radius: 0.3em;
-    background-color: orangered;
+   /*display:none;*/
 }
 
 .card h3 {
@@ -150,6 +144,23 @@ body {
     width: 80%;
 }
 
+.button {
+    width: auto;
+    display: inline-block;
+    border-radius: 0.3em;
+    padding: 5px;
+    margin: 5px;
+    background-color: lightgray;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color:gray;
+}
+
+.date-form {
+    display:none;
+}
 #label {
     margin: 0;
     padding: 0;
@@ -244,7 +255,6 @@ body {
     height:0;
     text-align: center;
     display:none;
-    transition: height 1s; 
    
 }
 
@@ -264,4 +274,29 @@ body {
     display: none;
 }
 
+.title-form {
+    display:inline-block;
+}
+.title {
+    display: inline-block;
+    width: 80%;
+    font-size: 28px;
+    margin: 5px 0;
+    background-color: ghostwhite;
+    outline: none;
+    border: 1px solid ghostwhite;
+    border-radius: 0.3em;
+}
+
+.title:focus {
+    background-color: lightgray;
+}
+
+.close {
+    display: inline-block;
+    font-size: 28px;
+    float: right;
+    margin: 0 10px;
+    cursor: pointer;
+}
 
