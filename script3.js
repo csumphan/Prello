@@ -60,9 +60,11 @@ addList.addEventListener('click', function(){
             newList.parentElement.removeChild(newList);
             
             //updates list id after deleted list to be one less
+            console.log("Index: " + index);
+            console.log("Length of ListofList" + listOfList.length);
             for(var x = index+1; x < listOfList.length; x++) {
-                document.getElementById("list " + x).id = 
-                    "list " + (x-1);
+                document.getElementById("list-" + x).id = 
+                    "list-" + (x-1);
             }
             
             //removes deleted list from data structure
@@ -517,18 +519,18 @@ function prepopulateBoard() {
 
         closeB.addEventListener('click', function(){
             if(confirm("Warning! Are you sure you want to delete this list?")) {
-                var index = getListId(newList.id);
-
+                var index = getListId(this.parentElement.id);
+                //console.log("deletelist: " + )
                 //remove modal cards from html
                 for(var x = 0; x < listOfList[index].length; x++) {  document.querySelector('body').removeChild(listOfList[index][x].modalView);
                 }
 
                 //removes mini card and list from html
-                newList.parentElement.removeChild(newList);
+                this.parentElement.parentElement.removeChild(this.parentElement);
 
                 //updates list id after deleted list to be one less
                 for(var x = index+1; x < listOfList.length; x++) {
-                    document.getElementById("list " + x).id = 
+                    document.getElementById("list-" + x).id = 
                         "list-" + (x-1);
                 }
 
@@ -636,9 +638,13 @@ function prepopulateBoard() {
             var card = {miniView: miniCard, modalView: modalCard};
 
             miniCard.addEventListener('click',function(){
-                modalCard.style.display = "block";
-                bg.style.display = "block";
+                selfID = getCardID(this.id);
 
+                var modalCard = listOfList[selfID[0]][selfID[1]].modalView;
+                
+                modalCard.style.display = "block";
+                
+                bg.style.display = "block";
                 bgGetID(modalCard.id);
             });
 
@@ -648,8 +654,26 @@ function prepopulateBoard() {
             
         }
 }
-    
-    
-//prepopulateBoard();
+
+function openMenu() {
+    $(".menu").click(function(){
+        
+        if($(".menu-list").css("display") === "none"){
+            
+            $('.menu-list').show('slow');
+        }
+        
+        else {
+            //$('.menu-list').animate({width: '0'});
+            $('.menu-list').hide('slow');
+            
+        }
+    });
+}
+$(document).ready(function(){
+    prepopulateBoard();
+    openMenu();
+});   
+
     
         
