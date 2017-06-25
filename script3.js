@@ -1,16 +1,120 @@
-var lol = document.querySelector('.lol');
+var lol = $('.lol');
 var lol_lis = document.querySelectorAll('.lol > li');
 var addList = document.querySelector("#addList");
 var bg = document.querySelector(".bg");
 
 var listOfList = [];
 
+$('.lol').on('click',".list-close", function(e){
+    if(confirm("Warning! Are you sure you want to delete this list?" + e.target.classList)) {
+        
+        console.log("attr.id: " + e.target.parentElement.id);
+        var index = getListId(e.target.parentElement.id);
+        //remove modal cards from html
+        for(var x = 0; x < listOfList[index].length; x++) {  document.querySelector('body').removeChild(listOfList[index][x].modalView);
+        }
+
+        //removes mini card and list from html
+        //newList.parentElement.removeChild(newList);
+        $("#" + e.target.parentElement.id).remove();
+
+        //updates list id after deleted list to be one less
+        console.log("Index: " + index);
+        console.log("Length of ListofList" + listOfList.length);
+        for(var x = index+1; x < listOfList.length; x++) {
+            document.getElementById("list-" + x).id = 
+                "list-" + (x-1);
+        }
+
+        //removes deleted list from data structure
+        listOfList.splice(index, 1);
+
+        //changes all lists' id and card id after deleted list
+        for(var x = index; x < listOfList.length; x++) {
+            for(var y = 0; y < listOfList[x].length; y++) {
+                var prevId = getCardID(listOfList[x][y].miniView.id);
+                //console.log(listOfList[x].miniView);
+                listOfList[x][y].miniView.id = "miniCard-" + x + "-" + y;
+
+                listOfList[x][y].modalView.id = "modalCard-" + x + "-" + y;
+            }
+        }
+        }           
+        
+        
+    });
+
+$('.lol').on('click',".card-list .mini-card", function(e){
+    console.log("this: " + $(this).attr('class'));
+    var splitID = getCardID(e.currentTarget.id);
+    console.log("target id: " + e.currentTarget.id);
+    console.log(listOfList[0][0].modalView);
+    var modalCard = listOfList[splitID[0]][splitID[1]].modalView;
+    
+    modalCard.style.display = "block";
+    bg.style.display = "block";
+    
+    bgGetID(e.currentTarget.id);
+});
+
+$('.lol').on("click", ".add-card", function(e){
+
+    //get index of list and cardlist for this card
+    var listID = getListId(e.target.parentElement.id);
+    var cardIndex = listOfList[listID].length;
+
+    //creates the mini card view
+    var miniCard = document.createElement('li');
+    var newLink = document.createElement('div');
+    var linkText = document.createTextNode("Title");
+    var selectedLabel = document.createElement('ul');
+    selectedLabel.className += " label-container";
+
+    miniCard.id = "miniCard-" + listID + "-" + cardIndex; 
+    miniCard.className += " mini-card"
+    newLink.appendChild(linkText);
+    //newLink.href = '#';
+
+    miniCard.appendChild(newLink);
+    miniCard.appendChild(selectedLabel);
+    
+    //add mini card to card list
+    var cardListSelector = "#" + e.target.parentElement.id + " .card-list";
+    
+    $(cardListSelector).append(miniCard);
+
+    //creates the actual card
+    bg.style.display = "block";
+    var modalCard = createCard(listID,cardIndex);
+    modalCard.style.display = "block";
+    bgGetID(modalCard.id);
+
+    //id format of modalCard and miniCard
+    //modalCard = "modalCard [list index] [cardlist index]
+    //miniCard = "miniCard [list index] [cardlist index]
+
+    //create object literal containing both miniCard and modalCard
+    var card = {miniView: miniCard, modalView: modalCard};
+
+    miniCard.addEventListener('click',function(){
+        modalCard.style.display = "block";
+        bg.style.display = "block";
+
+        bgGetID(modalCard.id);
+    });
+
+    //append card into a list in a list
+    listOfList[listID].push(card);
+});
+
 addList.addEventListener('click', function(){
     //when a list is added a container representing a list of cards is
     //added to the underlying data structure.
     listOfList.push([]);
-
+    
+    
     var newList = document.createElement('li');
+    
     var listForm = document.createElement('form');
     var listInput = document.createElement('input');
     var closeB = document.createElement('span');
@@ -18,7 +122,7 @@ addList.addEventListener('click', function(){
     
     var cardList = document.createElement('ul');
     cardList.className += " card-list";
-
+    
     listForm.className += " list-form";
     listInput.className += " list-title";
     listInput.value = "Title " + listOfList.length; 
@@ -29,8 +133,9 @@ addList.addEventListener('click', function(){
     closeB.className += " close list-close";
     closeB.innerHTML = "&times;";
     
-    
+    //var addCard = $("<p></p>").text("Add Card");
     addCard.appendChild(document.createTextNode("Add Card"));
+    //addCard.addClass("add-card clickable");
     addCard.className += " add-card clickable";
     
     
@@ -44,93 +149,94 @@ addList.addEventListener('click', function(){
     //each list will have an id, which is the index of the list in the
     //data structure
     newList.id = "list-" + (listOfList.length - 1);
+    newList.className = "list";
     
 
-    lol.insertBefore(newList, addList);
+    addList.before(newList);
     
-    closeB.addEventListener('click', function(){
-        if(confirm("Warning! Are you sure you want to delete this list?")) {
-            var index = getListId(newList.id);
-            
-            //remove modal cards from html
-            for(var x = 0; x < listOfList[index].length; x++) {  document.querySelector('body').removeChild(listOfList[index][x].modalView);
-            }
-            
-            //removes mini card and list from html
-            newList.parentElement.removeChild(newList);
-            
-            //updates list id after deleted list to be one less
-            console.log("Index: " + index);
-            console.log("Length of ListofList" + listOfList.length);
-            for(var x = index+1; x < listOfList.length; x++) {
-                document.getElementById("list-" + x).id = 
-                    "list-" + (x-1);
-            }
-            
-            //removes deleted list from data structure
-            listOfList.splice(index, 1);
-            
-            //changes all lists' id and card id after deleted list
-            for(var x = index; x < listOfList.length; x++) {
-                for(var y = 0; y < listOfList[x].length; y++) {
-                    var prevId = getCardID(listOfList[x][y].miniView.id);
-                    //console.log(listOfList[x].miniView);
-                    listOfList[x][y].miniView.id = "miniCard-" + x + "-" + y;
-
-                    listOfList[x][y].modalView.id = "modalCard-" + x + "-" + y;
-                }
-            }
-            }           
-        
-        
-    });
+//    closeB.addEventListener('click', function(){
+//        if(confirm("Warning! Are you sure you want to delete this list?")) {
+//            var index = getListId(newList.id);
+//            
+//            //remove modal cards from html
+//            for(var x = 0; x < listOfList[index].length; x++) {  document.querySelector('body').removeChild(listOfList[index][x].modalView);
+//            }
+//            
+//            //removes mini card and list from html
+//            newList.parentElement.removeChild(newList);
+//            
+//            //updates list id after deleted list to be one less
+//            console.log("Index: " + index);
+//            console.log("Length of ListofList" + listOfList.length);
+//            for(var x = index+1; x < listOfList.length; x++) {
+//                document.getElementById("list-" + x).id = 
+//                    "list-" + (x-1);
+//            }
+//            
+//            //removes deleted list from data structure
+//            listOfList.splice(index, 1);
+//            
+//            //changes all lists' id and card id after deleted list
+//            for(var x = index; x < listOfList.length; x++) {
+//                for(var y = 0; y < listOfList[x].length; y++) {
+//                    var prevId = getCardID(listOfList[x][y].miniView.id);
+//                    //console.log(listOfList[x].miniView);
+//                    listOfList[x][y].miniView.id = "miniCard-" + x + "-" + y;
+//
+//                    listOfList[x][y].modalView.id = "modalCard-" + x + "-" + y;
+//                }
+//            }
+//            }           
+//        
+//        
+//    });
     
     //adds a new card to its respective list
-    addCard.addEventListener("click", function(){
-        
-        //get index of list and cardlist for this card
-        var listID = getListId(this.parentNode.id);
-        var cardIndex = listOfList[listID].length;
-        
-        //creates the mini card view
-        var miniCard = document.createElement('li');
-        var newLink = document.createElement('div');
-        var linkText = document.createTextNode("Title");
-        var selectedLabel = document.createElement('ul');
-        selectedLabel.className += " label-container";
-        
-        miniCard.id = "miniCard-" + listID + "-" + cardIndex; 
-        miniCard.className += " mini-card"
-        newLink.appendChild(linkText);
-        //newLink.href = '#';
-
-        miniCard.appendChild(newLink);
-        miniCard.appendChild(selectedLabel);
-        cardList.appendChild(miniCard);
-        
-        //creates the actual card
-        bg.style.display = "block";
-        var modalCard = createCard(listID,cardIndex);
-        modalCard.style.display = "block";
-        bgGetID(modalCard.id);
-        
-        //id format of modalCard and miniCard
-        //modalCard = "modalCard [list index] [cardlist index]
-        //miniCard = "miniCard [list index] [cardlist index]
-        
-        //create object literal containing both miniCard and modalCard
-        var card = {miniView: miniCard, modalView: modalCard};
-        
-        miniCard.addEventListener('click',function(){
-            modalCard.style.display = "block";
-            bg.style.display = "block";
-            
-            bgGetID(modalCard.id);
-        });
-        
-        //append card into a list in a list
-        listOfList[listID].push(card);
-    });
+//    addCard.addEventListener("click", function(){
+//        
+//        //get index of list and cardlist for this card
+//        var listID = getListId(this.parentNode.id);
+//        var cardIndex = listOfList[listID].length;
+//        
+//        //creates the mini card view
+//        var miniCard = document.createElement('li');
+//        var newLink = document.createElement('div');
+//        var linkText = document.createTextNode("Title");
+//        var selectedLabel = document.createElement('ul');
+//        selectedLabel.className += " label-container";
+//        
+//        miniCard.id = "miniCard-" + listID + "-" + cardIndex; 
+//        miniCard.className += " mini-card"
+//        newLink.appendChild(linkText);
+//        //newLink.href = '#';
+//
+//        miniCard.appendChild(newLink);
+//        miniCard.appendChild(selectedLabel);
+//        cardList.appendChild(miniCard);
+//        
+//        //creates the actual card
+//        bg.style.display = "block";
+//        var modalCard = createCard(listID,cardIndex);
+//        modalCard.style.display = "block";
+//        bgGetID(modalCard.id);
+//        
+//        //id format of modalCard and miniCard
+//        //modalCard = "modalCard [list index] [cardlist index]
+//        //miniCard = "miniCard [list index] [cardlist index]
+//        
+//        //create object literal containing both miniCard and modalCard
+//        var card = {miniView: miniCard, modalView: modalCard};
+//        
+//        miniCard.addEventListener('click',function(){
+//            modalCard.style.display = "block";
+//            bg.style.display = "block";
+//            
+//            bgGetID(modalCard.id);
+//        });
+//        
+//        //append card into a list in a list
+//        listOfList[listID].push(card);
+//    });
     
 });
 
@@ -263,7 +369,7 @@ function createCard(listID, cardIndex){
     labelText.style.margin = "5px";
     
     var selectedLabel = document.createElement('ul');
-    selectedLabel.className += " label-container inline";
+    selectedLabel.className += " label-container inline selected-label";
     
     var labelB = document.createElement("div");
     labelB.className += " label-button button";
@@ -333,7 +439,7 @@ function createCard(listID, cardIndex){
             
             
             selectedLabel.appendChild(newLabel);
-            
+
             var cardId = getCardID(card.id);
             var miniCard = listOfList[cardId[0]][cardId[1]].miniView;
             
@@ -342,6 +448,9 @@ function createCard(listID, cardIndex){
             
         });
     }
+    
+
+    
     
     modalLabel.appendChild(labelText);
     modalLabel.appendChild(selectedLabel);
@@ -470,6 +579,20 @@ function createCard(listID, cardIndex){
     card.appendChild(modalFooter);
     
     document.querySelector('body').appendChild(card);
+    
+    $('.selected-label').on('click','li',function(e){
+        
+        var splitID = getCardID(card.id);
+        var mini = "#miniCard-" + splitID[0] + "-" + splitID[1];
+        var labelIndex = $(this).index();
+        
+        
+        $(mini + " ul").children()[labelIndex].remove();
+        $(this).remove();
+        
+        
+    });
+    
     return card;
 }
 
@@ -654,6 +777,39 @@ function prepopulateBoard() {
             
         }
 }
+//function createBoard() {
+//    
+//    var listHTML = "<li class='list' id='list-0'><form class='list-form'><input class='list-title' type='text' value='To-Do'></form><span class='close list-close'>&times;</span><ul class='card-list card-list'><li class='mini-card' id='miniCard-0-0'><div>Enemy Sprite</div><ul class=' label-container'><li class='label green-label click label-sm'></li><li class='label blue-label click label-sm'></li></ul></li><li class=' mini-card' id='miniCard-0-1'><div>Enemy AI Movement</div><ul class=' label-container'><li class='label red-label click label-sm'></li><li class='label yellow-label click label-sm'></li><li class='label orange-label click label-sm'></li></ul></li><li class=' mini-card' id='miniCard-0-2'><div>Character Control</div><ul class=' label-container'><li class='label blue-label click label-sm'></li></ul></li><li class=' mini-card' id='miniCard-0-3'><div>Background Design</div><ul class=' label-container'><li class='label orange-label click label-sm'></li><li class='label yellow-label click label-sm'></li></ul></li></ul><p class=' add-card clickable'>Add Card</p><li class='list' id='list-1'><form class='list-form'><input class='list-title' type='text' value='In Progress'></form><span class='close list-close'>&times;</span><ul class='card-list card-list'><li class='mini-card' id='miniCard-1-0'><div>Level Design</div><ul class=' label-container'><li class='label green-label click label-sm'></li></ul></li><li class=' mini-card' id='miniCard-1-1'><div>Enemy AI Design</div><ul class=' label-container'><li class='label red-label click label-sm'></li><li class='label yellow-label click label-sm'></li><li class='label orange-label click label-sm'></li></ul></li><li class=' mini-card' id='miniCard-1-2'><div>Character Design</div><ul class=' label-container'><li class='label yellow-label click label-sm'></li></ul></li></ul><p class=' add-card clickable'>Add Card</p>";
+//    
+//    var modalCards = "<div class=' card' id='modalCard-0-0' style='display: none;'><div class=' modal-header'><form class=' title-form'><input class=' title' type='text' value='Enemy Sprite'></form><span class=' close'>&times;</span></div><div class=' modal-date'><h3 class=' date-text inline'>Due Date: 2017-07-02 @ 13:00</h3><div class=' button'>Edit Date</div><form class=' date-form' style='display: none;'><input type='datetime-local'></form></div><div class=' modal-label'><h5 class=' inline' style='margin: 5px;'>Label: </h5><ul class=' label-container inline'><li class='label green-label click'></li><li class='label blue-label click'></li></ul><div class=' label-button button'>Edit Label</div><div class=' picker label-picker' style='display: block;'><form class=' label-form'><input class=' label-input' type='text' placeholder='Label Name'></form><ul class=' label-container'><li class='label green-label click'></li><li class='label blue-label click'></li><li class='label red-label click'></li><li class='label yellow-label click'></li><li class='label orange-label click'></li></ul></div></div><div class=' member-list'><h3 class=' inline'>Members: </h3><div class=' member-button button'>Edit Members</div><div class=' picker member-picker'><form class='member-form'><input class=' member-input' type='text' placeholder='Member Name'></form></div></div><div class=' description'><h3>Description</h3><p class='description-text'></p><textarea class='description-input' rows='8'></textarea><div class=' description-button button'>Edit Description</div></div><div class=' modal-footer'><div class=' button remove'>Remove Card</div></div></div>";
+//    
+//    $('#addList').before(listHTML);
+//    $("body").append(modalCards);
+//    
+//    var listSize = [4,3];
+//    
+//    for(var x = 0; x < listSize.length; x++) {
+//        
+//        listOfList.push([]);
+//        
+//        for(var y = 0; y < listSize[x]; y++) {
+//            var miniID = 'miniCard-' + x + "-" + y;
+//            var modalID = 'modalCard-' + x + "-" + y;
+//            
+//            var mini = document.getElementById(miniID);
+//            var modal = document.getElementById(modalID);
+//            
+//            
+//            var card = {miniView: mini, modalView: modal};
+//            
+//            listOfList[x].push(card);
+//        }
+//    }
+//    
+//   
+//    
+//    
+//}
 
 function openMenu() {
     $(".menu").click(function(){
@@ -661,17 +817,20 @@ function openMenu() {
         if($(".menu-list").css("display") === "none"){
             
             $('.menu-list').show('slow');
+            $('.main').animate({'margin-right': '320px'},'fast');
         }
         
         else {
             //$('.menu-list').animate({width: '0'});
             $('.menu-list').hide('slow');
+            $('.main').animate({'margin-right': '0px'},'fast');
             
         }
     });
 }
 $(document).ready(function(){
-    prepopulateBoard();
+    //prepopulateBoard();
+    //createBoard();
     openMenu();
 });   
 

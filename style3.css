@@ -53,6 +53,8 @@ body {
     white-space: nowrap;
     height: 100%;
     max-height: 100%;
+    margin-right: 0px;
+    overflow-y: scroll;
 }
 
 .lol {
@@ -400,7 +402,7 @@ body {
 }
 .title {
     display: inline-block;
-    width: 80%;
+    width: 100%;
     font-size: 28px;
     margin: 5px 0;
     background-color: ghostwhite;
@@ -424,3 +426,8 @@ body {
     font-size: 20px;
 }
 
+.selected-label li:hover {
+    border: 1px solid #FF1818;
+    box-shadow: 0 0 5px #FF1818;
+    
+}
