@@ -432,8 +432,13 @@ function createCard(listID, cardIndex){
         labelList[x].addEventListener('click', function(){
             var newLabel = document.createElement('li');
             var newLabelsm = document.createElement('li');
+            var labelInput = '#' + card.id + " .label-input";
+            
+            
+            console.log($(labelInput).val());
             
             newLabel.className += this.className;
+            newLabel.innerHTML = $(labelInput).val();
             newLabelsm.className += this.className;
             newLabelsm.className += " label-sm";
             
