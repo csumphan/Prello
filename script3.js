@@ -1,9 +1,17 @@
+//html elements that are already on page
 var lol = $('.lol');
-var lol_lis = document.querySelectorAll('.lol > li');
 var addList = document.querySelector("#addList");
 var bg = document.querySelector(".bg");
 
+//data structure that holds the lists of list and cards
+//example structure: [[card1,card2,card3],[],[card1,card2]]
+//outer list represents the list of lists
+//inner list represent a list
+//card1 represents a card object which includes the mini card and
+//modal card.
 var listOfList = [];
+
+//
 
 $('.lol').on('click',".list-close", function(e){
     if(confirm("Warning! Are you sure you want to delete this list?" + e.target.classList)) {
@@ -248,6 +256,12 @@ bg.addEventListener("click", function() {
     
 });
 
+$('.lol').on("submit", '.list-form', function(e){
+    e.preventDefault();
+    $(this).children()[0].blur();
+    
+});
+
 
 function bgGetID(cardID) {
     var splitID = cardID.split("-");
@@ -373,7 +387,7 @@ function createCard(listID, cardIndex){
     
     var labelB = document.createElement("div");
     labelB.className += " label-button button";
-    labelB.innerHTML = "Edit Label";
+    labelB.innerHTML = "Add Label";
     
     var labelPicker = document.createElement("div");
     labelPicker.className += " picker label-picker";
@@ -420,6 +434,7 @@ function createCard(listID, cardIndex){
     labelB.addEventListener('click', function(){
     if(labelPicker.style.display === "block") {
         labelPicker.style.display = "none";
+        labelPickerInput.value = '';
     }
     
     else {
@@ -450,6 +465,8 @@ function createCard(listID, cardIndex){
             
             miniCard.lastElementChild.appendChild(newLabelsm);
             
+            labelPickerInput.value = '';
+            
             
         });
     }
@@ -474,6 +491,9 @@ function createCard(listID, cardIndex){
     var memberB = document.createElement('div');
     memberB.className += " member-button button";
     memberB.innerHTML = "Edit Members";
+    
+    var selectedMember = document.createElement('ul');
+    selectedMember.className += " selected-label label-container inline";
     
     var memberPicker = document.createElement('div');
     memberPicker.className += " picker member-picker";
@@ -501,6 +521,7 @@ function createCard(listID, cardIndex){
     
     modalMember.appendChild(memberText);
     modalMember.appendChild(memberB);
+    modalMember.appendChild(selectedMember);
     modalMember.appendChild(memberPicker);
     
     //create card description
@@ -587,15 +608,41 @@ function createCard(listID, cardIndex){
     
     $('.selected-label').on('click','li',function(e){
         
-        var splitID = getCardID(card.id);
-        var mini = "#miniCard-" + splitID[0] + "-" + splitID[1];
-        var labelIndex = $(this).index();
+        console.log($(this).parent().parent().attr('class'))
+        //if the li is from the member picker section
+        if($(this).parent().parent().hasClass('member-list')) {
+            $(this).remove();
+        }
+        //if the li is from the label picker section
+        else {
+            var splitID = getCardID(card.id);
+            var mini = "#miniCard-" + splitID[0] + "-" + splitID[1];
+            var labelIndex = $(this).index();
+
+
+            $(mini + " ul").children()[labelIndex].remove();
+            $(this).remove();
+        }
         
         
-        $(mini + " ul").children()[labelIndex].remove();
-        $(this).remove();
+    });
+    
+    $('.label-form').on('submit',function(e){
+        e.preventDefault();
+    });
+    
+    $('.member-form').on('submit',function(e){
+        e.preventDefault();
+        //get value from input of card that triggered
+        //insert into same card a label of the input
+        //console.log($(this).children()[0].value);
+        var memName = $(this).children()[0].value;
+        var newMember = $('<li>', {"class": "label click"});
+        newMember.text(memName);
+        //console.log($(this).parent)
+        $(this).parent().prev().append(newMember);
         
-        
+        $(this).children()[0].value = '';
     });
     
     return card;
@@ -782,39 +829,6 @@ function prepopulateBoard() {
             
         }
 }
-//function createBoard() {
-//    
-//    var listHTML = "<li class='list' id='list-0'><form class='list-form'><input class='list-title' type='text' value='To-Do'></form><span class='close list-close'>&times;</span><ul class='card-list card-list'><li class='mini-card' id='miniCard-0-0'><div>Enemy Sprite</div><ul class=' label-container'><li class='label green-label click label-sm'></li><li class='label blue-label click label-sm'></li></ul></li><li class=' mini-card' id='miniCard-0-1'><div>Enemy AI Movement</div><ul class=' label-container'><li class='label red-label click label-sm'></li><li class='label yellow-label click label-sm'></li><li class='label orange-label click label-sm'></li></ul></li><li class=' mini-card' id='miniCard-0-2'><div>Character Control</div><ul class=' label-container'><li class='label blue-label click label-sm'></li></ul></li><li class=' mini-card' id='miniCard-0-3'><div>Background Design</div><ul class=' label-container'><li class='label orange-label click label-sm'></li><li class='label yellow-label click label-sm'></li></ul></li></ul><p class=' add-card clickable'>Add Card</p><li class='list' id='list-1'><form class='list-form'><input class='list-title' type='text' value='In Progress'></form><span class='close list-close'>&times;</span><ul class='card-list card-list'><li class='mini-card' id='miniCard-1-0'><div>Level Design</div><ul class=' label-container'><li class='label green-label click label-sm'></li></ul></li><li class=' mini-card' id='miniCard-1-1'><div>Enemy AI Design</div><ul class=' label-container'><li class='label red-label click label-sm'></li><li class='label yellow-label click label-sm'></li><li class='label orange-label click label-sm'></li></ul></li><li class=' mini-card' id='miniCard-1-2'><div>Character Design</div><ul class=' label-container'><li class='label yellow-label click label-sm'></li></ul></li></ul><p class=' add-card clickable'>Add Card</p>";
-//    
-//    var modalCards = "<div class=' card' id='modalCard-0-0' style='display: none;'><div class=' modal-header'><form class=' title-form'><input class=' title' type='text' value='Enemy Sprite'></form><span class=' close'>&times;</span></div><div class=' modal-date'><h3 class=' date-text inline'>Due Date: 2017-07-02 @ 13:00</h3><div class=' button'>Edit Date</div><form class=' date-form' style='display: none;'><input type='datetime-local'></form></div><div class=' modal-label'><h5 class=' inline' style='margin: 5px;'>Label: </h5><ul class=' label-container inline'><li class='label green-label click'></li><li class='label blue-label click'></li></ul><div class=' label-button button'>Edit Label</div><div class=' picker label-picker' style='display: block;'><form class=' label-form'><input class=' label-input' type='text' placeholder='Label Name'></form><ul class=' label-container'><li class='label green-label click'></li><li class='label blue-label click'></li><li class='label red-label click'></li><li class='label yellow-label click'></li><li class='label orange-label click'></li></ul></div></div><div class=' member-list'><h3 class=' inline'>Members: </h3><div class=' member-button button'>Edit Members</div><div class=' picker member-picker'><form class='member-form'><input class=' member-input' type='text' placeholder='Member Name'></form></div></div><div class=' description'><h3>Description</h3><p class='description-text'></p><textarea class='description-input' rows='8'></textarea><div class=' description-button button'>Edit Description</div></div><div class=' modal-footer'><div class=' button remove'>Remove Card</div></div></div>";
-//    
-//    $('#addList').before(listHTML);
-//    $("body").append(modalCards);
-//    
-//    var listSize = [4,3];
-//    
-//    for(var x = 0; x < listSize.length; x++) {
-//        
-//        listOfList.push([]);
-//        
-//        for(var y = 0; y < listSize[x]; y++) {
-//            var miniID = 'miniCard-' + x + "-" + y;
-//            var modalID = 'modalCard-' + x + "-" + y;
-//            
-//            var mini = document.getElementById(miniID);
-//            var modal = document.getElementById(modalID);
-//            
-//            
-//            var card = {miniView: mini, modalView: modal};
-//            
-//            listOfList[x].push(card);
-//        }
-//    }
-//    
-//   
-//    
-//    
-//}
 
 function openMenu() {
     $(".menu").click(function(){
