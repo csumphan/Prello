@@ -68,7 +68,7 @@ body {
 
 .lol > li {
     display: inline-block;
-    width: 250px;
+    width: 280px;
     vertical-align: top;
     background-color: lightgray;
     border-radius: 0.3em;
@@ -93,6 +93,7 @@ body {
     display: inline-block;
     width: 100%;
     font-size: 24px;
+    font-weight: 600;
     margin: 5px 0;
     background-color: lightgray;
     outline: none;
@@ -167,6 +168,7 @@ body {
     left: 25%;
     z-index: 2;
     overflow-y: auto;
+    //overflow-x: hidden;
     display:none;
 }
 
@@ -228,10 +230,10 @@ body {
 
 .label {
     min-width: 50px;
-    height: 40px;
+    height: 35px;
     text-align: center;
     vertical-align:middle;
-    line-height: 40px;
+    line-height: 35px;
     margin: 5px;
     padding: 0 2px;
     display:inline-block;
@@ -294,7 +296,9 @@ body {
     color: black;
 }
 .description-text {
+    width: 95%;
     font-size: 12px;
+    word-wrap: break-word;
 }
 .description-input {
     width: 95%;
