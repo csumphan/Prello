@@ -637,68 +637,56 @@ function createCard(listID, cardIndex){
             listOfList[splitID[0]][splitID[1]].miniView.parentNode.removeChild(listOfList[splitID[0]][splitID[1]].miniView);
           document.querySelector('body').removeChild(listOfList[splitID[0]][splitID[1]].modalView);
             ////
-//            $.ajax({
-//            url:'http://thiman.me:1337/csumphan/list',
-//            type: 'GET',
-//            dataType: 'json',
-//            success: function(json) {
-//                for(var x = 0; x < json.length; x++) {
-//
-//                    if(json[x].lid === ('list-'+splitID[0])) {
-//                        var apiListID = json[x]._id;
-//                        console.log("WE GOT LID " + apiListID);
-//                        
-//                        var jsonCards = json[x].cards;
-//                        for(var y = 0; y <jsonCards.length; y++) {
-//                            var apiCardID = jsonCards[y]._id;
-//                            
-//                            if(jsonCards[y].cid === ('card-'+splitID[0]+'-'+splitID[1]))
-//                            $.ajax({
-//                                url: 'http://thiman.me:1337/csumphan/list/' +apiListID+'/'+card+'/'+apiCardID,
-//                                type: 'DELETE',
-//                                dataType: 'json',
-//                                success: function(){console.log("DELETED")}
-//                        });
-//                            
-//                            else if (getCardID(jsonCards[y].cid)[1] > splitID[1]) {
-//                                $.ajax({
-//                                url: 'http://thiman.me:1337/csumphan/list/' +apiListID+'/'+card+'/'+apiCardID,
-//                                type: 'PATCH',
-//                                data: {
-//                                    cid: 
-//                                },
-//                                dataType: 'json',
-//                                success: function(){console.log("DELETED")}
-//                            }
-//                                
-//                        }
-//                        
-//                        
-//                        break;
-//                    }
-//                    else if(getListId(json[x].lid) > getListId(lid)) {
-//                        var apiListID = json[x]._id;
-//                        
-//                        $.ajax({
-//                            url: 'http://thiman.me:1337/csumphan/list/' +apiListID,
-//                            type: 'PATCH',
-//                            data: {
-//                                lid: 'list-' + (getListId(json[x].lid)-1)
-//                            },
-//                            dataType: 'json',
-//                            success: function(){console.log('updated')}
-//                        });
-//                    }
-//                }
-//            }
-//        });
-//            ////
+            $.ajax({
+            url: 'http://thiman.me:1337/csumphan/list',
+            type: 'GET',
+            dataType: 'json',
+            success: function(json){
+                for(var x = 0; x < json.length; x++){
+                    if(getListId(json[x].lid) === listID){
+
+                        var cardIndex = getCardID(card.id)[1];
+                        
+                        $.ajax({
+                            url: 'http://thiman.me:1337/csumphan/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                            type: 'DELETE',
+                            dataType: 'json',
+                            success: function() {console.log('it is deleted');}
+                        });
+                        
+                        
+                        for(var current = cardIndex+1; current < json[x].cards.length; current++) {
+                            
+                            var newCID = 'card-' + listID + '-' + (current-1);
+                            
+                            $.ajax({
+                                url: 'http://thiman.me:1337/csumphan/list/' + json[x]._id + '/card/' + json[x].cards[current]._id,
+                                type: 'PATCH',
+                                data: {
+                                    title: json[x].cards[current].title,
+                                    dueDate: json[x].cards[current].dueDate,
+                                    labels: json[x].cards[current].labels,
+                                    members: json[x].cards[current].members,
+                                    cid: newCID,
+                                    _id: json[x].cards[current]._id,
+                                    description: json[x].cards[current].description             
+                                    },
+                                dataType: 'json',
+                                success: function(){console.log('DESCRIPTION CHANGE SUCCESS');}
+                        });
+                        }
+                        break;
+                    }
+                }
+            }
+            });
+            ////
             listOfList[splitID[0]].splice(splitID[1],1);
             
             for(var x = splitID[1]; x < listOfList[splitID[0]].length; x++){
-                listOfList[splitID[0]][splitID[1]].miniView.id = "miniCard-" + splitID[0] + "-" + splitID[1];
+                listOfList[splitID[0]][x].miniView.id = "miniCard-" + splitID[0] + "-" + x;
                 
-                listOfList[splitID[0]][splitID[1]].modalView.id = "modalCard-" + splitID[0] + "-" + splitID[1];
+                listOfList[splitID[0]][x].modalView.id = "modalCard-" + splitID[0] + "-" + x;
             }
             
             bg.style.display = "none";
@@ -722,20 +710,99 @@ function createCard(listID, cardIndex){
     $('.selected-label').on('click','li',function(e){
         
         console.log($(this).parent().parent().attr('class'))
+        
+        var labelIndex = $(this).index();
+        
         //if the li is from the member picker section
         if($(this).parent().parent().hasClass('member-list')) {
             $(this).remove();
+            
+            $.ajax({
+            url: 'http://thiman.me:1337/csumphan/list',
+            type: 'GET',
+            dataType: 'json',
+            success: function(json){
+                for(var x = 0; x < json.length; x++){
+                    if(getListId(json[x].lid) === listID){
+
+                        var cardIndex = getCardID(card.id)[1];
+                        var newMemList = json[x].cards[cardIndex].members;
+                        if(newMemList.length <= 1) {
+                            newMemList = [''];
+                        }
+                        else {
+                            newMemList.splice(labelIndex,1);
+                        }
+
+                        $.ajax({
+                            url: 'http://thiman.me:1337/csumphan/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                            type: 'PATCH',
+                            data: {
+                                title: json[x].cards[cardIndex].title,
+                                dueDate: json[x].cards[cardIndex].dueDate,
+                                labels: json[x].cards[cardIndex].labels,
+                                members: newMemList,
+                                cid: json[x].cards[cardIndex].cid,
+                                _id: json[x].cards[cardIndex]._id,
+                                description: json[x].cards[cardIndex].description             
+                            },
+                            dataType: 'json',
+                            success: function(){console.log('DESCRIPTION CHANGE SUCCESS');}
+                        });
+                    }
+                }
+            }
+            });
         }
         //if the li is from the label picker section
         else {
             var splitID = getCardID(card.id);
             var mini = "#miniCard-" + splitID[0] + "-" + splitID[1];
-            var labelIndex = $(this).index();
+            
 
 
             $(mini + " ul").children()[labelIndex].remove();
             $(this).remove();
+            
+            $.ajax({
+            url: 'http://thiman.me:1337/csumphan/list',
+            type: 'GET',
+            dataType: 'json',
+            success: function(json){
+                for(var x = 0; x < json.length; x++){
+                    if(getListId(json[x].lid) === listID){
+
+                        var cardIndex = getCardID(card.id)[1];
+                        var newLabelList = json[x].cards[cardIndex].labels;
+                        
+                        if(newLabelList.length <= 1) {
+                            newLabelList = [''];
+                        }
+                        else {
+                            newLabelList.splice(labelIndex,1);
+                        }
+
+                        $.ajax({
+                            url: 'http://thiman.me:1337/csumphan/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                            type: 'PATCH',
+                            data: {
+                                title: json[x].cards[cardIndex].title,
+                                dueDate: json[x].cards[cardIndex].dueDate,
+                                labels: newLabelList,
+                                members: json[x].cards[cardIndex].members,
+                                cid: json[x].cards[cardIndex].cid,
+                                _id: json[x].cards[cardIndex]._id,
+                                description: json[x].cards[cardIndex].description             
+                            },
+                            dataType: 'json',
+                            success: function(){console.log('DESCRIPTION CHANGE SUCCESS');}
+                        });
+                    }
+                }
+            }
+            });
         }
+        
         
         
     });
@@ -1175,7 +1242,6 @@ $(document).ready(function(){
                     $(modalID + ' .date-text').append(cardList[y].dueDate);
                     
                     var colors = cardList[y].labels;
-                    console.log(colors);
                     //var names = cardList[y].labelsName;
                     if(colors[0][0] === '' && colors[0][1] === '') {}
                     else{
@@ -1186,8 +1252,6 @@ $(document).ready(function(){
                             var newMiniLabel = $('<li>').attr('class', 'label click label-sm ' + classColor);
 
                             newLabel.append(colors[i][1]);
-
-                            console.log(colors);
 
                             $(modalID + ' .modal-label' +' .selected-label').append(newLabel);
 
