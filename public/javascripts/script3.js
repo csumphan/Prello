@@ -2,6 +2,7 @@
 var lol = $('.lol');
 var addList = document.querySelector("#addList");
 var bg = document.querySelector(".bg");
+var serverURL = 'http://localhost:3000';
 
 //data structure that holds the lists of list and cards
 //example structure: [[card1,card2,card3],[],[card1,card2]]
@@ -36,7 +37,7 @@ $('.lol').on('click',".list-close", function(e){
         }
         //delete list from api
         $.ajax({
-            url:'http://thiman.me:1337/csumphan/list',
+            url: serverURL + '/list',
             type: 'GET',
             dataType: 'json',
             success: function(json) {
@@ -47,7 +48,7 @@ $('.lol').on('click',".list-close", function(e){
                         console.log("WE GOT LID " + apiListID);
                         
                         $.ajax({
-                            url: 'http://thiman.me:1337/csumphan/list/' +apiListID,
+                            url: serverURL + '/list/' +apiListID,
                             type: 'DELETE',
                             dataType: 'json',
                             success: function(){console.log("DELETED")}
@@ -57,7 +58,7 @@ $('.lol').on('click',".list-close", function(e){
                         var apiListID = json[x]._id;
                         
                         $.ajax({
-                            url: 'http://thiman.me:1337/csumphan/list/' +apiListID,
+                            url: serverURL + '/list/' +apiListID,
                             type: 'PATCH',
                             data: {
                                 lid: 'list-' + (getListId(json[x].lid)-1)
@@ -124,7 +125,7 @@ $('.lol').on("click", ".add-card", function(e){
     var card = {miniView: miniCard, modalView: modalCard};
     
     $.ajax({
-        url: 'http://thiman.me:1337/csumphan/list',
+        url: serverURL + '/list',
         type: 'GET',
         dataType: 'json',
         success: function(json){
@@ -133,7 +134,7 @@ $('.lol').on("click", ".add-card", function(e){
                     var jsonListID = json[x]._id;
                     
                     $.ajax({
-                        url: 'http://thiman.me:1337/csumphan/list/'+ jsonListID + '/card',
+                        url: serverURL + '/list/'+ jsonListID + '/card',
                         type: 'POST',
                         data: {
                             cid: 'card-' + listID + '-' + cardIndex,
@@ -146,7 +147,7 @@ $('.lol').on("click", ".add-card", function(e){
                         dataType: 'json',
                         success: function(){
                             $.ajax({
-                                url: 'http://thiman.me:1337/csumphan/list',
+                                url: serverURL + '/list',
                                 type: 'GET',
                                 dataType: 'json',
                                 success: function(json) {
@@ -184,7 +185,7 @@ addList.addEventListener('click', function(){
     var newList = createList();
 
     $.ajax({
-        url: 'http://thiman.me:1337/csumphan/list',
+        url: serverURL + '/list',
         type: 'POST',
         data: {
             title: $('#' + newList.id + ' .list-title').val(),
@@ -267,7 +268,7 @@ function createCard(listID, cardIndex){
         listOfList[listID][cardIndex].miniView.firstChild.innerHTML = newTitle.value;
         
         $.ajax({
-            url: 'http://thiman.me:1337/csumphan/list',
+            url: serverURL + '/list',
             type: 'GET',
             dataType: 'json',
             success: function(json){
@@ -279,7 +280,7 @@ function createCard(listID, cardIndex){
                         console.log("APIIIIII: " + getAPICardID(card.className));
                         //console.log()
                         $.ajax({
-                            url: 'http://thiman.me:1337/csumphan/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                            url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
                             type: 'PATCH',
                             data: {
                                 title: newTitle.value,
@@ -353,7 +354,7 @@ function createCard(listID, cardIndex){
         var formatDate = dateInput.value.slice(0,10) + " @ " + dateInput.value.slice(11);
         
         $.ajax({
-            url: 'http://thiman.me:1337/csumphan/list',
+            url: serverURL + '/list',
             type: 'GET',
             dataType: 'json',
             success: function(json){
@@ -365,7 +366,7 @@ function createCard(listID, cardIndex){
                         console.log("APIIIIII: " + getAPICardID(card.className));
                         //console.log()
                         $.ajax({
-                            url: 'http://thiman.me:1337/csumphan/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                            url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
                             type: 'PATCH',
                             data: {
                                 title: json[x].cards[cardIndex].title,
@@ -490,7 +491,7 @@ function createCard(listID, cardIndex){
             miniCard.lastElementChild.appendChild(newLabelsm);
             
             $.ajax({
-            url: 'http://thiman.me:1337/csumphan/list',
+            url: serverURL + '/list',
             type: 'GET',
             dataType: 'json',
             success: function(json){
@@ -510,7 +511,7 @@ function createCard(listID, cardIndex){
                         }
                         
                         $.ajax({
-                            url: 'http://thiman.me:1337/csumphan/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                            url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
                             type: 'PATCH',
                             data: {
                                 title: json[x].cards[cardIndex].title,
@@ -638,7 +639,7 @@ function createCard(listID, cardIndex){
           document.querySelector('body').removeChild(listOfList[splitID[0]][splitID[1]].modalView);
             ////
             $.ajax({
-            url: 'http://thiman.me:1337/csumphan/list',
+            url: serverURL + '/list',
             type: 'GET',
             dataType: 'json',
             success: function(json){
@@ -648,7 +649,7 @@ function createCard(listID, cardIndex){
                         var cardIndex = getCardID(card.id)[1];
                         
                         $.ajax({
-                            url: 'http://thiman.me:1337/csumphan/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                            url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
                             type: 'DELETE',
                             dataType: 'json',
                             success: function() {console.log('it is deleted');}
@@ -660,7 +661,7 @@ function createCard(listID, cardIndex){
                             var newCID = 'card-' + listID + '-' + (current-1);
                             
                             $.ajax({
-                                url: 'http://thiman.me:1337/csumphan/list/' + json[x]._id + '/card/' + json[x].cards[current]._id,
+                                url: serverURL + '/list/' + json[x]._id + '/card/' + json[x].cards[current]._id,
                                 type: 'PATCH',
                                 data: {
                                     title: json[x].cards[current].title,
@@ -718,7 +719,7 @@ function createCard(listID, cardIndex){
             $(this).remove();
             
             $.ajax({
-            url: 'http://thiman.me:1337/csumphan/list',
+            url: serverURL + '/list',
             type: 'GET',
             dataType: 'json',
             success: function(json){
@@ -735,7 +736,7 @@ function createCard(listID, cardIndex){
                         }
 
                         $.ajax({
-                            url: 'http://thiman.me:1337/csumphan/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                            url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
                             type: 'PATCH',
                             data: {
                                 title: json[x].cards[cardIndex].title,
@@ -765,7 +766,7 @@ function createCard(listID, cardIndex){
             $(this).remove();
             
             $.ajax({
-            url: 'http://thiman.me:1337/csumphan/list',
+            url: serverURL + '/list',
             type: 'GET',
             dataType: 'json',
             success: function(json){
@@ -776,14 +777,14 @@ function createCard(listID, cardIndex){
                         var newLabelList = json[x].cards[cardIndex].labels;
                         
                         if(newLabelList.length <= 1) {
-                            newLabelList = [''];
+                            newLabelList = [['','']];
                         }
                         else {
                             newLabelList.splice(labelIndex,1);
                         }
 
                         $.ajax({
-                            url: 'http://thiman.me:1337/csumphan/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                            url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
                             type: 'PATCH',
                             data: {
                                 title: json[x].cards[cardIndex].title,
@@ -825,7 +826,7 @@ function createCard(listID, cardIndex){
             $(this).parent().prev().append(newMember);
             
             $.ajax({
-            url: 'http://thiman.me:1337/csumphan/list',
+            url: serverURL + '/list',
             type: 'GET',
             dataType: 'json',
             success: function(json){
@@ -844,7 +845,7 @@ function createCard(listID, cardIndex){
                         }
                         
                         $.ajax({
-                            url: 'http://thiman.me:1337/csumphan/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                            url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
                             type: 'PATCH',
                             data: {
                                 title: json[x].cards[cardIndex].title,
@@ -886,7 +887,7 @@ function createCard(listID, cardIndex){
         $(this).prev()[0].innerHTML = $(this).val();
         
         $.ajax({
-            url: 'http://thiman.me:1337/csumphan/list',
+            url: serverURL + '/list',
             type: 'GET',
             dataType: 'json',
             success: function(json){
@@ -898,7 +899,7 @@ function createCard(listID, cardIndex){
                         console.log("APIIIIII: " + getAPICardID(card.className));
                         //console.log()
                         $.ajax({
-                            url: 'http://thiman.me:1337/csumphan/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                            url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
                             type: 'PATCH',
                             data: {
                                 title: json[x].cards[cardIndex].title,
@@ -1212,7 +1213,7 @@ function createMiniCard(listID,cardIndex) {
 
 $(document).ready(function(){
     $.ajax({
-        url: 'http://thiman.me:1337/csumphan/list',
+        url: serverURL + '/list',
         type: 'GET',
         dataType: 'json',
         success: function(json) {
