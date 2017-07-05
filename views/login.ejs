@@ -26,11 +26,11 @@
 
         <div class="reg-login">
         <h2>Login</h2>
-        <form id="login">
+        <form id="login" action='/create/signin' method='POST'>
             Username
-            <input class='textbox' id='login-user' type="text" name="username-login" required>
+            <input class='textbox' id='login-user' type="text" name="username" required>
             Password
-            <input class='textbox' id='login-pass' type="password" name="password-login" required>
+            <input class='textbox' id='login-pass' type="password" name="password" required>
             <div class="remember-me">
                 <p>Remember Me</p> <input type="checkbox" name="rem-me">
             </div>

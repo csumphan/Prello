@@ -11,7 +11,7 @@ body {
     overflow: hidden;
 }
 
- 
+
 
 
 .nav {
@@ -19,31 +19,52 @@ body {
     margin: 0;
     width: 100%;
     position:fixed;
-    border: 1px solid black;
+
     list-style: none;
     background-color: #0067A3;
     top: 0;
-    
+    font-weight: 100;
 }
 
 .nav > li {
-    
+
     float:left;
     display:block;
-    border-right: 1px solid black;
+    border-right: 1px solid #4893BF;
     padding: 10px;
     text-align: center;
     color: #F3F3F3;
     margin: 0;
 }
 
+#navbar-logo {
+    color: rgba(255,255,255,0.7);
+    font-family: Brush Script MT;
+    display: inline-block;
+    font-size: 1.8em;
+    padding: 0;
+    float: none;
+    border-right: 0px;
+    margin: 0 25%;
+    width: 50px;
+}
+
+#navbar-logo:hover {
+    background-color: #0067A3;
+}
+
+.nav .sign-out {
+    float: right;
+
+}
+
 .nav .menu {
     float: right;
-    border-left: 1px solid black;
+    border-left: 1px solid #4893BF;
 }
 
 .nav .menu:hover {
-    
+
 }
 
 .nav > li:hover {
@@ -70,18 +91,19 @@ body {
     display: inline-block;
     width: 280px;
     vertical-align: top;
-    background-color: lightgray;
+    background-color: #E2E4E6;
     border-radius: 0.3em;
-    border: 1px black solid;
+    border: 1px #4893BF solid;
     text-align: center;
+    line-height: 18px;
     margin: 10px;
     max-height: 550px;
     overflow: hidden;
-    
+
 }
 
 .list-header {
-    
+
 }
 
 .list-form {
@@ -93,11 +115,12 @@ body {
     display: inline-block;
     width: 100%;
     font-size: 24px;
+    color: #4D4D4D;
     font-weight: 600;
     margin: 5px 0;
-    background-color: lightgray;
+    background-color: #E2E4E6;
     outline: none;
-    border: 1px solid lightgray;
+    border: 1px solid #E2E4E6;
     border-radius: 0.3em;
 }
 
@@ -115,7 +138,7 @@ body {
     background-color: gray;
 }
 .card-list {
-    padding: 0px;
+    padding: 0 4px;
     margin: 0px;
     width: auto;
     max-height: 460px;
@@ -124,6 +147,7 @@ body {
 .card-list li {
     list-style: none;
     margin: 5px;
+    color: #4D4D4D;
 }
 
 .card-list a:hover {
@@ -149,6 +173,7 @@ body {
 .add-card {
     margin: 5px 0;
     padding: 5px 0;
+    color: #4D4D4D;
 }
 .add-card:hover {
     background-color: gray;
@@ -225,7 +250,7 @@ body {
     margin: 5px auto;
     width: 98%;
     white-space: normal;
-    
+
 }
 
 .label {
@@ -309,6 +334,42 @@ body {
     display:none;
 }
 
+.comment-user {
+    margin: 0;
+    margin-right: 5px;
+    font-size: 16px;
+}
+
+.comment-date {
+    margin: 0;
+    color: gray;
+    font-size: 0.8em;
+}
+.comment-section ul {
+    padding: 0;
+}
+
+.comment-input {
+    width: 80%;
+    border-radius: 0.5em;
+    padding: 5px;
+}
+
+.comment-text {
+    font-size: 12px;
+    padding: 0;
+    margin: 10px 0;
+    margin-left: 2px;
+    border: 1px solid black;
+    border-radius: 0.5em;
+    width: 80%;
+    padding: 5px;
+}
+
+.comment-section ul {
+    list-style: none;
+}
+
 .remove {
     float:right;
     background-color:red;
@@ -378,7 +439,7 @@ body {
 }
 
 .menu-list {
-    
+
     position:fixed;
     right: 0%;
     top: 40px;
@@ -388,9 +449,9 @@ body {
     height:100%;
     display: none;
     text-align: center;
-    
+
     overflow: hidden;
-   
+
 }
 
 .menu-list h3 {
@@ -442,5 +503,5 @@ body {
 .selected-label li:hover {
     border: 1px solid #FF1818;
     box-shadow: 0 0 5px #FF1818;
-    
+
 }

@@ -1,8 +1,85 @@
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    background-color: #0079BF;
+    margin: 0;
+    padding: 0;
+    font-family:"Open Sans", sans-serif;
 }
 
-a {
-  color: #00B7FF;
+.title {
+    margin: 0;
+    padding: 0;
+    padding-top: 5%;
+    text-align: center;
+    font-family: Brush Script MT, Rockwell;
+    font-size: 86px;
+    color: white;
+}
+
+h2 {
+    font-size: 2em;
+    font-weight: 100;
+    margin-top: 5px;
+}
+
+.green-button {
+    background-color: #5EB54A;
+    border-radius: 0.3em;
+    color: white;
+    font-size: 14px;
+    font-weight: 100;
+    padding: 5px;
+}
+
+.textbox {
+    font-size: 1em;
+    border-radius: 0.3em;
+    border: 1px gray solid;
+    padding: 5px;
+}
+
+.textbox:focus {
+    outline:none;
+    background-color: #EDEFF0;
+    box-shadow: 1px 1px 1px 1px #EDEFF0;
+}
+
+.user-form {
+    width: 60%;
+    margin: 5em auto;
+    margin-top: 1.5em;
+    padding-left: 15%;
+    
+}
+.reg-login {
+    margin: 0;
+    display:inline-block;
+    vertical-align: top;
+    background-color: white;
+    border: 1px dodgerblue solid;
+    width: 250px;
+    padding: 1em;
+    border-radius: 1em;
+    text-align: center;
+}
+form {
+    margin: auto;
+    padding: 0 auto;
+
+}
+
+.remember-me input {
+    margin: 0;
+    padding: 0;
+    display:inline-block;
+}
+
+.remember-me p{
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-size: 10px;
+}
+input {
+    display: block;
+    margin: 10px auto;
 }

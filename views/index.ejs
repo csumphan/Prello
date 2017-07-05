@@ -1,11 +1,35 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
-</html>
+<%- include header.ejs %>
+
+
+    <div class="main">
+        <ul class="lol">
+            <li id="addList" class="clickable">Add List</li>
+        </ul>
+
+    </div>
+
+    <div class="menu-list">
+        <h2>Menu</h2>
+        <div class="member-list">
+        <h3 class="inline">Members:</h3>
+        <a href="#"><%= user.username %></a>
+        <a href="#">John Doe</a>
+        <a href="#">Darth Vader</a>
+        <a href="#" style="background-color: skyblue">Add Member</a>
+        </div>
+
+        <h3>Change Background</h3>
+        <h3>Activity</h3>
+        <h3>Setting</h3>
+        <h3>Label</h3>
+        <h3 style="background-color: orangered">Close Board</h3>
+
+    </div>
+
+
+    <div class='bg'>
+
+    </div>
+
+
+<%- include footer.ejs %>

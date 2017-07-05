@@ -1,0 +1,24 @@
+
+.inline {
+    display: inline-block;
+}
+
+.comment-user {
+    margin: 0;
+}
+
+.comment-date {
+    margin: 0;
+}
+
+.comment-text {
+    margin: 3px 0;
+    margin-left: 10px;
+    border: 1px solid black;
+    border-radius: 0.5em;
+    
+}
+
+.comment-section ul {
+    list-style: none;
+}

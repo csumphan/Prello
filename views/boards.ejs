@@ -2,8 +2,8 @@
 
 <html>
 <head>
-    <title><%= title %> </title>
-    <link rel="stylesheet" type="text/css" href="style2.css">
+    <title>Prello</title>
+    <link rel="stylesheet" type="text/css" href="stylesheets/style2.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     </head>
@@ -16,7 +16,7 @@
                 <div class="nav-board-list">
                 <h2>Personal Boards</h2>
                 <ul>
-                    <li>API</li>
+                    <li>sdfsd</li>
                     <li>Google</li>
                     <li>Facebook</li>
                     <li>Amazon</li>
@@ -35,16 +35,23 @@
     </ul>
     <div class="board-list">
     <h3>Personal Boards</h3>
+
     <ul>
-        <li>API</li>
+        <li>
+            <form action='/board' method='GET'>
+                <input type='submit'>
+            </form>
+
+        </li>
         <li>Google</li>
         <li>Facebook</li>
-        <li>Amazon</li>
-        <li>Amazon</li>
+        <li contenteditable="true">Amazon</li>
+        <li><%= user.username %></li>
     </ul>
         <button>Add Board</button>
     </div>
 
+    <script src='javascripts/script2.js'></script>
 
     </body>
 </html>
