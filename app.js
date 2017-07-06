@@ -7,11 +7,13 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('client-sessions');
 
-var board = require('./routes/board');
-var loginPage = require('./routes/loginPage');
-var boards = require('./routes/boards');
+//var board = require('./routes/board');
+//var loginPage = require('./routes/loginPage');
+//var boards = require('./routes/boards');
+var index = require('./routes/index');
 var users = require('./routes/users');
 var list = require('./routes/list');
+var board = require('./routes/board');
 var loginInfo = require('./routes/login');
 var mongoose = require('mongoose');
 
@@ -71,10 +73,10 @@ app.use(function(req, res, next) {
 
 
 app.use('/board', board);
-app.use('/', loginPage);
+app.use('/', index);
 app.use('/users', users);
 app.use('/list', list);
-app.use('/boards', boards);
+//app.use('/boards', boards);
 
 //route that handles getting/posting login info
 //also validates login credentials

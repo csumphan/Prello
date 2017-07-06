@@ -36,19 +36,18 @@
     <div class="board-list">
     <h3>Personal Boards</h3>
 
-    <ul>
+    <ul class='boards'>
         <li>
-            <form action='/board' method='GET'>
-                <input type='submit'>
+            <form>
+
+                <button class='board' formaction="/board" formmethod="GET">API</button>
             </form>
 
         </li>
-        <li>Google</li>
-        <li>Facebook</li>
-        <li contenteditable="true">Amazon</li>
-        <li><%= user.username %></li>
+
+
     </ul>
-        <button>Add Board</button>
+        <button class='add-board'>Add Board</button>
     </div>
 
     <script src='javascripts/script2.js'></script>

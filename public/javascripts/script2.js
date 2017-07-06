@@ -12,12 +12,23 @@ $(document).ready(function(){
         });
     });
 
-    // $('.board-list').on('click', 'li', function(){
-    //     $.ajax({
-    //         url: serverURL + '/board',
-    //         type: 'GET',
-    //         dataType: 'json',
-    //         async:false,
-    //     });
-    // });
+    $('.add-board').on('click', function(e){
+
+        e.preventDefault();
+
+        var newBoard = $('<li>');
+        var newForm = $('<form>');
+
+        var newButton = $('<button>').attr('class','board');
+        newButton.text('Board 1');
+
+        newForm.append(newButton);
+        newBoard.append(newForm);
+
+        $('.boards').prepend(newBoard);
+
+        $.ajax({
+            url: serverURL + ''
+        });
+    });
 });

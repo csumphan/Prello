@@ -30,6 +30,16 @@ router.post('/', function(req, res){
   });
 });
 
+router.delete('/:userid', function(req, res){
+    LoginInfo.findByIdAndRemove(req.params.userid, function(err, user){
+        if(err) {
+            return console.log(err);
+        }
+        res.send();
+    });
+
+    res.send();
+});
 router.post('/signin', function(req,res){
     console.log(req.body);
     LoginInfo.findOne({username: req.body.username}, function(err, user){

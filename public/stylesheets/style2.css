@@ -93,29 +93,51 @@ body {
     display:flex;
     flex-wrap: wrap;
     justify-content: flex-start;
+    list-style: none;
 
 }
-.board-list li {
 
-    text-align: center;
+.board-list form{
+    width: 100%;
+
+}
+
+.board-list li {
+    width: 23%;
+    margin: 5px 5px;
+}
+.board-list .board {
+
+    /*text-align: center;
     line-height: 3em;
     background-color: #0067A3;
     color: white;
     list-style: none;
-    min-width: 15%;
-    height: 3em;
-    width: 23%;
-    margin: 5px 5px;
-    padding: 1em 0;
+    min-width: 15%;*/
+
+    background-color: #0067A3;
     border-radius: 0.3em;
-    font-size: 1.2em;
     font-weight: 100;
+    color: white;
+    height: 5em;
+    width: 100%;
+    font-size: 1.2em;
+    margin: 5px 5px;
+    border: none;
+
+
 
 }
 
-.board-list li:hover {
-   background-color: gray;
+.board-list .board:hover {
+    background-color: #005587;
+    cursor: pointer;
 }
+
+.board-list .board:focus {
+    outline: none;
+}
+
 
 button {
     margin: 1em;

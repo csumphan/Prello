@@ -3,12 +3,13 @@ body {
     margin: 0;
     padding: 0;
     font-family:"Open Sans", sans-serif;
+    overflow: auto;
 }
 
 .title {
     margin: 0;
     padding: 0;
-    padding-top: 5%;
+    padding-top: 2%;
     text-align: center;
     font-family: Brush Script MT, Rockwell;
     font-size: 86px;
@@ -45,10 +46,10 @@ h2 {
 
 .user-form {
     width: 60%;
-    margin: 5em auto;
+    margin: 3em auto;
     margin-top: 1.5em;
     padding-left: 15%;
-    
+
 }
 .reg-login {
     margin: 0;
