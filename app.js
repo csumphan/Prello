@@ -7,6 +7,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('client-sessions');
 
+
 //var board = require('./routes/board');
 //var loginPage = require('./routes/loginPage');
 //var boards = require('./routes/boards');
@@ -19,6 +20,7 @@ var mongoose = require('mongoose');
 
 var LoginInfo = require('./models/loginInfo');
 
+
 mongoose.connect('mongodb://localhost/prello'); //must speficy port if it is not default
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -26,7 +28,7 @@ db.once('open', function() {
   // we're connected!
 
 });
-
+require('./db');
 var app = express();
 
 // view engine setup
@@ -56,6 +58,7 @@ app.use(session({
 
 app.use(function(req, res, next) {
   if (req.session && req.session.user) {
+
     LoginInfo.findOne({ username: req.session.user.username }, function(err, user) {
       if (user) {
         req.user = user;

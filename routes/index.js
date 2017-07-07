@@ -23,7 +23,8 @@ router.get('/board', requireLogin, function(req, res, next) {
                       });
 });
 
-router.get('/boards', requireLogin, function(req, res, next) {
+router.get('/boards', function(req, res, next) {
+    console.log(req.user);
   res.locals.user = req.user;
 
   res.render('boards');
