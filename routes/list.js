@@ -1,6 +1,8 @@
 var express = require('express');
 var mongoose = require('mongoose');
+
 var List = require('../models/list');
+var Board = require('../models/board');
 
 var router = express.Router();
 
@@ -13,7 +15,7 @@ router.get('/', function(req, res, next) {
 })
 });
 
-router.post('/', function(req, res) {
+router.post('/:bid', function(req, res) {
     var newList = new List({
         title: req.body.title,
         cards: req.body.cards,
@@ -27,6 +29,16 @@ router.post('/', function(req, res) {
     if (err) {
         return console.log(err);
     } else {
+        Board.findOne({_id: req.params.bid}, function(err,board){
+            board.lists.push(newList._id);
+
+            board.save(function(err, modBoard){
+                if(err){
+                    console.log(err);
+                }
+
+            });
+        });
         res.json(list);
     }
 });

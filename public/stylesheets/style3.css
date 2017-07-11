@@ -1,5 +1,6 @@
 html {
     height: 100%;
+    width: 100%;
 }
 body {
     background-color: #0079BF;
@@ -14,62 +15,6 @@ body {
 
 
 
-.nav {
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    position:fixed;
-
-    list-style: none;
-    background-color: #0067A3;
-    top: 0;
-    font-weight: 100;
-}
-
-.nav > li {
-
-    float:left;
-    display:block;
-    border-right: 1px solid #4893BF;
-    padding: 10px;
-    text-align: center;
-    color: #F3F3F3;
-    margin: 0;
-}
-
-#navbar-logo {
-    color: rgba(255,255,255,0.7);
-    font-family: Brush Script MT;
-    display: inline-block;
-    font-size: 1.8em;
-    padding: 0;
-    float: none;
-    border-right: 0px;
-    margin: 0 25%;
-    width: 50px;
-}
-
-#navbar-logo:hover {
-    background-color: #0067A3;
-}
-
-.nav .sign-out {
-    float: right;
-
-}
-
-.nav .menu {
-    float: right;
-    border-left: 1px solid #4893BF;
-}
-
-.nav .menu:hover {
-
-}
-
-.nav > li:hover {
-    background-color: gray;
-}
 
 .main {
     margin-top: 42px;
@@ -93,7 +38,7 @@ body {
     vertical-align: top;
     background-color: #E2E4E6;
     border-radius: 0.3em;
-    border: 1px #4893BF solid;
+    box-shadow: 1px 2px  #2e2e2e;
     text-align: center;
     line-height: 18px;
     margin: 10px;
@@ -504,4 +449,8 @@ body {
     border: 1px solid #FF1818;
     box-shadow: 0 0 5px #FF1818;
 
+}
+
+.visible {
+    display: block;
 }

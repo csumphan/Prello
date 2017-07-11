@@ -11,19 +11,8 @@
 
         <ul class="nav">
         <li>My Account</li>
-        <li class="hover-list">
+        <li class="nav-board">
             Boards
-                <div class="nav-board-list">
-                <h2>Personal Boards</h2>
-                <ul>
-                    <li>sdfsd</li>
-                    <li>Google</li>
-                    <li>Facebook</li>
-                    <li>Amazon</li>
-                </ul>
-
-                <p>Add New Board</p>
-    </div>
         </li>
         <li>Home</li>
         <li id='navbar-logo'>Prello</li>
@@ -37,17 +26,19 @@
     <h3>Personal Boards</h3>
 
     <ul class='boards'>
-        <li>
-            <form>
+        <% for(var x = 0; x < boards.length; x++) {%>
 
-                <button class='board' formaction="/board" formmethod="GET">API</button>
-            </form>
-
-        </li>
-
+            <li>
+                <form>
+                    <button contenteditable="true" class='board' formaction="/board/<%=boards[x]._id%>" formmethod="GET"> <%= boards[x].title%> </button>
+                </form>
+            </li>
+        <% } %>
 
     </ul>
-        <button class='add-board'>Add Board</button>
+        <input class='add-board-title' type='text' placeholder="Board Title...">
+        <button class='boards-button add-board'>Add Board</button>
+        <button class='boards-button delete-board'>Delete Board</button>
     </div>
 
     <script src='javascripts/script2.js'></script>

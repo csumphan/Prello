@@ -28,7 +28,7 @@
         <li class="menu clickable">
             Menu
         </li>
-        <li class='sign-out clickable'>Sign Out</li>
+        <li class='sign-out clickable'> <%=signIn%> </li>
     </ul>
 
     <div class='nav-board-menu'>
@@ -48,3 +48,19 @@
         <input class='nav-create-text' type='text' placeholder="Board Name..">
         <button class='nav-create-board'>Create New Board...</button>
     </div>
+
+    <div class='main'>
+
+    <div class='no-access-msg'>
+        <img class='no-access-img' src="https://static.tumblr.com/d3b9810018f6a3efbdde5e8837f315d6/h1ooh7j/zB1nra9bh/tumblr_static_1hubbwqgjl8gw4g40www088o_640_v2.png">
+        <h2>You must be a board member to view this board</h2>
+        <form>
+            <button formaction="/boards" formmethod="GET">Go to Home Page </button>
+        </form>
+    </div>
+
+</div>
+
+
+<script src='/javascripts/navbar.js'></script>
+<%- include footer.ejs %>

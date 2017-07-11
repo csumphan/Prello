@@ -3,6 +3,7 @@ var lol = $('.lol');
 var addList = document.querySelector("#addList");
 var bg = document.querySelector(".bg");
 var serverURL = 'http://localhost:3000';
+var bid = $('meta[name=bid]').attr("content");
 
 //data structure that holds the lists of list and cards
 //example structure: [[card1,card2,card3],[],[card1,card2]]
@@ -35,8 +36,10 @@ $('.lol').on('click',".list-close", function(e){
                 "list-" + (x-1);
         }
         //delete list from api
+
+
         $.ajax({
-            url: serverURL + '/list',
+            url: serverURL + '/boardManager/' + bid,
             type: 'GET',
             dataType: 'json',
             success: function(json) {
@@ -45,6 +48,12 @@ $('.lol').on('click',".list-close", function(e){
                     if(json[x].lid === lid) {
                         var apiListID = json[x]._id;
 
+                        $.ajax({
+                            url: serverURL + '/boardManager/' + bid + '/list/' + apiListID,
+                            type: 'DELETE',
+                            dataType: 'json',
+                            success: function(){}
+                        });
 
                         $.ajax({
                             url: serverURL + '/list/' +apiListID,
@@ -145,7 +154,7 @@ $('.lol').on("click", ".add-card", function(e){
     var card = {miniView: miniCard, modalView: modalCard};
 
     $.ajax({
-        url: serverURL + '/list',
+        url: serverURL + '/boardManager/' + bid,
         type: 'GET',
         dataType: 'json',
         success: function(json){
@@ -169,7 +178,7 @@ $('.lol').on("click", ".add-card", function(e){
                         dataType: 'json',
                         success: function(){
                             $.ajax({
-                                url: serverURL + '/list',
+                                url: serverURL + '/boardManager/' + bid,
                                 type: 'GET',
                                 dataType: 'json',
                                 success: function(json) {
@@ -207,7 +216,7 @@ addList.addEventListener('click', function(){
     var newList = createList();
 
     $.ajax({
-        url: serverURL + '/list',
+        url: serverURL + '/list/' + $('meta[name=bid]').attr("content"),
         type: 'POST',
         data: {
             title: $('#' + newList.id + ' .list-title').val(),
@@ -236,7 +245,7 @@ $('.lol').on('focusout', '.list-form', function(e){
         var listForm = this;
 
     $.ajax({
-            url: serverURL + '/list',
+            url: serverURL + '/boardManager/' + bid,
             type: 'GET',
             dataType: 'json',
             success: function(json) {
@@ -323,7 +332,7 @@ function createCard(listID, cardIndex){
         listOfList[listID][cardIndex].miniView.firstChild.innerHTML = newTitle.value;
 
         $.ajax({
-            url: serverURL + '/list',
+            url: serverURL + '/boardManager/' + bid,
             type: 'GET',
             dataType: 'json',
             success: function(json){
@@ -409,7 +418,7 @@ function createCard(listID, cardIndex){
         var formatDate = dateInput.value.slice(0,10) + " @ " + dateInput.value.slice(11);
 
         $.ajax({
-            url: serverURL + '/list',
+            url: serverURL + '/boardManager/' + bid,
             type: 'GET',
             dataType: 'json',
             success: function(json){
@@ -542,7 +551,7 @@ function createCard(listID, cardIndex){
             miniCard.lastElementChild.appendChild(newLabelsm);
 
             $.ajax({
-            url: serverURL + '/list',
+            url: serverURL + '/boardManager/' + bid,
             type: 'GET',
             dataType: 'json',
             success: function(json){
@@ -733,7 +742,7 @@ function createCard(listID, cardIndex){
           document.querySelector('body').removeChild(listOfList[splitID[0]][splitID[1]].modalView);
             ////
             $.ajax({
-            url: serverURL + '/list',
+            url: serverURL + '/boardManager/' + bid,
             type: 'GET',
             dataType: 'json',
             success: function(json){
@@ -816,7 +825,7 @@ function createCard(listID, cardIndex){
         $(this).remove();
 
         $.ajax({
-        url: serverURL + '/list',
+        url: serverURL + '/boardManager/' + bid,
         type: 'GET',
         dataType: 'json',
         success: function(json){
@@ -865,7 +874,7 @@ function createCard(listID, cardIndex){
         $(this).remove();
 
         $.ajax({
-        url: serverURL + '/list',
+        url: serverURL + '/boardManager/' + bid,
         type: 'GET',
         dataType: 'json',
         success: function(json){
@@ -922,7 +931,7 @@ function createCard(listID, cardIndex){
             $(this).parent().prev().append(newMember);
 
             $.ajax({
-            url: serverURL + '/list',
+            url: serverURL + '/boardManager/' + bid,
             type: 'GET',
             dataType: 'json',
             success: function(json){
@@ -980,7 +989,7 @@ function createCard(listID, cardIndex){
         $(this).prev()[0].innerHTML = $(this).val();
 
         $.ajax({
-            url: serverURL + '/list',
+            url: serverURL + '/boardManager/' + bid,
             type: 'GET',
             dataType: 'json',
             success: function(json){
@@ -1048,7 +1057,7 @@ function createCard(listID, cardIndex){
         $('#' + card.id + ' .comment-section ul').prepend(comment);
 
         $.ajax({
-        url: serverURL + '/list',
+        url: serverURL + '/boardManager/' + bid,
         type: 'GET',
         dataType: 'json',
         success: function(json){
@@ -1378,10 +1387,11 @@ function createMiniCard(listID,cardIndex) {
 
 $(document).ready(function(){
     $.ajax({
-        url: serverURL + '/list',
+        url: serverURL + '/boardManager/' + bid,
         type: 'GET',
         dataType: 'json',
         success: function(json) {
+            console.log(json);
             var listPos = 0;
 
 
@@ -1473,17 +1483,7 @@ $(document).ready(function(){
         }
     });
 
-    $('.sign-out').on('click', function(){
-        $.ajax({
-            url: serverURL + '/create/signout',
-            type: 'GET',
-            dataType: 'json',
-            success: function(response){
-                console.log('SIGNED OUT');
-                window.location = response.redirect;
-            }
-        });
-    });
+
     //prepopulateBoard();
     //createBoard();
     openMenu();

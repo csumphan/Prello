@@ -18,6 +18,7 @@ var loginInfo = require('./routes/login');
 var mongoose = require('mongoose');
 
 var LoginInfo = require('./models/loginInfo');
+var isin = require('./contains');
 
 mongoose.connect('mongodb://localhost/prello'); //must speficy port if it is not default
 var db = mongoose.connection;
@@ -71,8 +72,34 @@ app.use(function(req, res, next) {
   }
 });
 
+app.use(function(req, res, next){
+    var urlSplit = req.path.split('/');
+    console.log(req.session.user);
+    console.log(urlSplit);
+    if(urlSplit.length === 3 && (['boardManager','board'].includes(urlSplit[1]))) {
 
-app.use('/board', board);
+        if(!req.session.user) {
+            res.redirect('/noaccess');
+        }
+        else {
+            var boardsList = req.session.user.boards;
+            console.log(boardsList);
+            if(!isin(boardsList,urlSplit[2])) {
+                res.redirect('/noaccess');
+            }
+            else{
+                next();
+            }
+        }
+    }
+
+    else {
+    next();
+}
+});
+
+
+app.use('/boardManager', board);
 app.use('/', index);
 app.use('/users', users);
 app.use('/list', list);
