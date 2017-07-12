@@ -20,7 +20,7 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
-//var io = require socket io
+require('../socketio').setup(server);
 /**
  * Listen on provided port, on all network interfaces.
  */
@@ -48,6 +48,7 @@ function normalizePort(val) {
 
   return false;
 }
+
 
 /**
  * Event listener for HTTP server "error" event.

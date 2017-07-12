@@ -74,8 +74,6 @@ app.use(function(req, res, next) {
 
 app.use(function(req, res, next){
     var urlSplit = req.path.split('/');
-    console.log(req.session.user);
-    console.log(urlSplit);
     if(urlSplit.length === 3 && (['boardManager','board'].includes(urlSplit[1]))) {
 
         if(!req.session.user) {
@@ -83,7 +81,6 @@ app.use(function(req, res, next){
         }
         else {
             var boardsList = req.session.user.boards;
-            console.log(boardsList);
             if(!isin(boardsList,urlSplit[2])) {
                 res.redirect('/noaccess');
             }

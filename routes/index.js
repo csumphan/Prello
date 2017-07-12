@@ -19,12 +19,10 @@ router.get('/', function(req, res, next) {
 
 router.get('/board/:bid', requireLogin, function(req, res, next) {
   //res.locals.user = req.user;
-  console.log('this is bid');
-  console.log(req.params.bid);
+
 
   LoginInfo.findOne({_id: req.user._id}).
       populate('boards').exec(function(err, user){
-          console.log('----');
           //console.log(boardsList);
           res.render('index', { title: 'Prello',
                                 cssFile: '/stylesheets/style3.css',
@@ -46,14 +44,11 @@ router.get('/board', requireLogin, function(req, res, next) {
 });
 
 router.get('/boards', requireLogin, function(req, res, next) {
-    console.log(req.user);
 
     res.locals.user = req.user;
 
     LoginInfo.findOne({_id: req.user._id}).
         populate('boards').exec(function(err, user){
-            console.log('----');
-            //console.log(boardsList);
             res.render('boards', {
                 boards: user.boards
             });

@@ -15,112 +15,6 @@ var listOfList = [];
 
 //
 
-$('.lol').on('click',".list-close", function(e){
-    if(confirm("Warning! Are you sure you want to delete this list?" + e.target.classList)) {
-
-
-        var index = getListId(e.target.parentElement.id);
-        var lid = e.target.parentElement.id;
-        //remove modal cards from html
-        for(var x = 0; x < listOfList[index].length; x++) {  document.querySelector('body').removeChild(listOfList[index][x].modalView);
-        }
-
-        //removes mini card and list from html
-        //newList.parentElement.removeChild(newList);
-        $("#" + e.target.parentElement.id).remove();
-
-        //updates list id after deleted list to be one less
-
-        for(var x = index+1; x < listOfList.length; x++) {
-            document.getElementById("list-" + x).id =
-                "list-" + (x-1);
-        }
-        //delete list from api
-
-
-        $.ajax({
-            url: serverURL + '/boardManager/' + bid,
-            type: 'GET',
-            dataType: 'json',
-            success: function(json) {
-                for(var x = 0; x < json.length; x++) {
-
-                    if(json[x].lid === lid) {
-                        var apiListID = json[x]._id;
-
-                        $.ajax({
-                            url: serverURL + '/boardManager/' + bid + '/list/' + apiListID,
-                            type: 'DELETE',
-                            dataType: 'json',
-                            success: function(){}
-                        });
-
-                        $.ajax({
-                            url: serverURL + '/list/' +apiListID,
-                            type: 'DELETE',
-                            dataType: 'json',
-                            success: function(){}
-                        });
-                    }
-                    else if(getListId(json[x].lid) > getListId(lid)) {
-                        var apiListID = json[x]._id;
-
-                        $.ajax({
-                            url: serverURL + '/list/' +apiListID,
-                            type: 'PATCH',
-                            data: {
-                                lid: 'list-' + (getListId(json[x].lid)-1)
-                            },
-                            dataType: 'json',
-                            success: function(){}
-                        });
-
-                        for(var cardIndex = 0; cardIndex < json[x].cards.length; cardIndex++){
-
-                            var currentCard = json[x].cards[cardIndex];
-
-                            var splitID = getCardID(currentCard.cid);
-                            var newCID = 'card-' + (splitID[0] - 1) + '-' + splitID[1];
-
-                            $.ajax({
-                            url: serverURL + '/list/' + apiListID + '/card/' + currentCard._id,
-                            type: 'PATCH',
-                            data: {
-                                title: currentCard.title,
-                                description: currentCard.description,
-                                cid: newCID,
-                                members: JSON.stringify(currentCard.members),
-                                labels: JSON.stringify(currentCard.labels),
-                                dueDate: currentCard.dueDate
-                            },
-                            dataType: 'json',
-                            sucess: function(){}
-                        });
-                        }
-
-                    }
-                }
-            }
-        });
-
-        //removes deleted list from data structure
-        listOfList.splice(index, 1);
-
-        //changes all lists' id and card id after deleted list
-        for(var x = index; x < listOfList.length; x++) {
-            for(var y = 0; y < listOfList[x].length; y++) {
-                var prevId = getCardID(listOfList[x][y].miniView.id);
-
-                listOfList[x][y].miniView.id = "miniCard-" + x + "-" + y;
-
-                listOfList[x][y].modalView.id = "modalCard-" + x + "-" + y;
-            }
-        }
-        }
-
-
-    });
-
 $('.lol').on('click',".card-list .mini-card", function(e){
     var splitID = getCardID(e.currentTarget.id);
     var modalCard = listOfList[splitID[0]][splitID[1]].modalView;
@@ -131,102 +25,7 @@ $('.lol').on('click',".card-list .mini-card", function(e){
     bgGetID(e.currentTarget.id);
 });
 
-$('.lol').on("click", ".add-card", function(e){
 
-    //get index of list and cardlist for this card
-    var listID = getListId(e.target.parentElement.id);
-    var cardIndex = listOfList[listID].length;
-
-    //creates the mini card view
-    var miniCard = createMiniCard(listID, cardIndex);
-
-    //creates the actual card
-    bg.style.display = "block";
-    var modalCard = createCard(listID,cardIndex);
-    modalCard.style.display = "block";
-    bgGetID(modalCard.id);
-
-    //id format of modalCard and miniCard
-    //modalCard = "modalCard [list index] [cardlist index]
-    //miniCard = "miniCard [list index] [cardlist index]
-
-    //create object literal containing both miniCard and modalCard
-    var card = {miniView: miniCard, modalView: modalCard};
-
-    $.ajax({
-        url: serverURL + '/boardManager/' + bid,
-        type: 'GET',
-        dataType: 'json',
-        success: function(json){
-            for(var x = 0; x < json.length; x++) {
-                if(e.target.parentElement.id === json[x].lid){
-                    var jsonListID = json[x]._id;
-
-                    $.ajax({
-                        url: serverURL + '/list/'+ jsonListID + '/card',
-                        type: 'POST',
-                        data: {
-                            cid: 'card-' + listID + '-' + cardIndex,
-                            title: $('#' + modalCard.id + ' .title').val(),
-                            creator: $('meta[name=username]').attr("content"),
-                            labels: JSON.stringify([['','']]),
-                            dueDate: '',
-                            members: JSON.stringify(['']),
-                            comments: JSON.stringify([['','','']]),
-                            description: ''
-                        },
-                        dataType: 'json',
-                        success: function(){
-                            $.ajax({
-                                url: serverURL + '/boardManager/' + bid,
-                                type: 'GET',
-                                dataType: 'json',
-                                success: function(json) {
-                                    var lastCard = json[x].cards.length-1;
-
-                                    var apiCardID = json[x].cards[lastCard]._id;
-
-                                    $(modalCard).addClass(apiCardID);
-                                }
-
-                            });
-                        }
-                    });
-
-                    break;
-                }
-            }
-        }
-
-    });
-
-
-    miniCard.addEventListener('click',function(){
-        modalCard.style.display = "block";
-        bg.style.display = "block";
-
-        bgGetID(modalCard.id);
-    });
-
-    //append card into a list in a list
-    listOfList[listID].push(card);
-});
-
-addList.addEventListener('click', function(){
-    var newList = createList();
-
-    $.ajax({
-        url: serverURL + '/list/' + $('meta[name=bid]').attr("content"),
-        type: 'POST',
-        data: {
-            title: $('#' + newList.id + ' .list-title').val(),
-            lid: newList.id
-        },
-        dataType: 'json',
-        success: function(){}
-    });
-
-});
 
 bg.addEventListener("click", function() {
     bg.style.display = "none";
@@ -293,811 +92,6 @@ function getAPICardID(c) {
     var classList = getClassList(c);
 
     return classList[1];
-}
-
-function createCard(listID, cardIndex){
-
-    //Create card div (card object)
-    var card = document.createElement("div");
-    card.className += " card";
-    card.id = "modalCard-" + listID + "-" + cardIndex;
-
-    //create card title
-    var modalHeader = document.createElement("div");
-    modalHeader.className += " modal-header";
-
-    var titleF = document.createElement("form");
-    titleF.className += " title-form";
-
-    var newTitle = document.createElement("input");
-    newTitle.className += " title";
-    newTitle.type = "text";
-    newTitle.value = "Title";
-
-    titleF.appendChild(newTitle);
-
-    var cardCloseButton = document.createElement("span");
-    cardCloseButton.className += " close";
-    cardCloseButton.innerHTML = "&times;";
-
-    var creatorHeader = document.createElement('h4');
-    creatorHeader.className += ' creator-header';
-    creatorHeader.innerHTML = $('meta[name=username]').attr("content");
-
-    //adds eventlistener to title
-    titleF.addEventListener('focusout',function(){
-        if(newTitle.value === "") {
-            newTitle.value = "Title";
-        }
-        listOfList[listID][cardIndex].miniView.firstChild.innerHTML = newTitle.value;
-
-        $.ajax({
-            url: serverURL + '/boardManager/' + bid,
-            type: 'GET',
-            dataType: 'json',
-            success: function(json){
-                for(var x = 0; x < json.length; x++){
-                    if(getListId(json[x].lid) === listID){
-
-                        var cardIndex = getCardID(card.id)[1];
-                        $.ajax({
-                            url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
-                            type: 'PATCH',
-                            data: {
-                                title: newTitle.value,
-                                dueDate: json[x].cards[cardIndex].dueDate,
-                                labels: JSON.stringify(json[x].cards[cardIndex].labels),
-                                members: JSON.stringify(json[x].cards[cardIndex].members),
-                                comments: JSON.stringify(json[x].cards[cardIndex].comments),
-                                cid: json[x].cards[cardIndex].cid,
-                                _id: json[x].cards[cardIndex]._id,
-                                description: json[x].cards[cardIndex].description
-                            },
-                            dataType: 'json',
-                            success: function(){
-                            }
-                        });
-                        break;
-                }
-            }
-        }
-        });
-
-    });
-    titleF.addEventListener('submit',function(e){
-    e.preventDefault();
-    newTitle.blur();
-});
-
-    //add event listener to close button
-    cardCloseButton.addEventListener('click', function(){
-    bg.style.display = "none";
-    card.style.display = "none";
-});
-
-    modalHeader.appendChild(titleF);
-    modalHeader.appendChild(cardCloseButton);
-    modalHeader.appendChild(creatorHeader);
-
-    //create card date selector
-    var modalDate = document.createElement("div");
-    modalDate.className += " modal-date";
-
-    var dateTitle = document.createElement("h3");
-    dateTitle.innerHTML = "Due Date: ";
-    dateTitle.className += " date-text inline";
-
-    var dateB = document.createElement("div");
-    dateB.innerHTML = "Edit Date";
-    dateB.className += " button";
-
-    var dateF = document.createElement("form");
-    dateF.className += " date-form";
-
-    var dateInput = document.createElement("input");
-    dateInput.class += " date-input";
-    dateInput.type = "datetime-local";
-
-    dateF.appendChild(dateInput);
-    //Add event listener to date button
-    //date input appears when date button is pressed
-    dateB.addEventListener('click', function(){
-    if(this.nextElementSibling.style.display === "block") {
-        this.nextElementSibling.style.display = "none";
-    }
-
-    else {
-    this.nextElementSibling.style.display = "block";
-    }
-});
-    //changes date text when input is unfocused
-    dateF.addEventListener('focusout', function(){
-    if(dateInput.value !== "")
-    {
-        dateTitle.innerHTML = "Due Date: ";
-        var formatDate = dateInput.value.slice(0,10) + " @ " + dateInput.value.slice(11);
-
-        $.ajax({
-            url: serverURL + '/boardManager/' + bid,
-            type: 'GET',
-            dataType: 'json',
-            success: function(json){
-                for(var x = 0; x < json.length; x++){
-                    if(getListId(json[x].lid) === listID){
-
-                        var cardIndex = getCardID(card.id)[1];
-
-                        $.ajax({
-                            url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
-                            type: 'PATCH',
-                            data: {
-                                title: json[x].cards[cardIndex].title,
-                                dueDate: formatDate,
-                                labels: JSON.stringify(json[x].cards[cardIndex].labels),
-                                members: JSON.stringify(json[x].cards[cardIndex].members),
-                                comments: JSON.stringify(json[x].cards[cardIndex].comments),
-                                cid: json[x].cards[cardIndex].cid,
-                                _id: json[x].cards[cardIndex]._id,
-                                description: json[x].cards[cardIndex].description
-                            },
-                            dataType: 'json',
-                            success: function(){}
-                        });
-                        break;
-                }
-            }
-        }
-        });
-
-      dateTitle.appendChild(document.createTextNode(formatDate));
-    }
-
-    this.style.display = "none";
-
-});
-
-    modalDate.appendChild(dateTitle);
-    modalDate.appendChild(dateB);
-    modalDate.appendChild(dateF);
-
-    //create card label selector
-
-    var modalLabel = document.createElement("div");
-    modalLabel.className += " modal-label";
-
-    var labelText = document.createElement("h5");
-    labelText.className += " inline";
-    labelText.innerHTML = "Label: ";
-    labelText.style.margin = "5px";
-
-    var selectedLabel = document.createElement('ul');
-    selectedLabel.className += " label-container inline selected-label for-label";
-
-    var labelB = document.createElement("div");
-    labelB.className += " label-button button";
-    labelB.innerHTML = "Add Label";
-
-    var labelPicker = document.createElement("div");
-    labelPicker.className += " picker label-picker";
-
-    var labelPickerForm = document.createElement('form');
-    labelPickerForm.className += " label-form";
-
-    var labelPickerInput = document.createElement('input');
-    labelPickerInput.className += " label-input";
-    labelPickerInput.type = "text";
-    labelPickerInput.placeholder = "Label Name";
-
-    labelPickerForm.appendChild(labelPickerInput);
-
-    var labelContainer = document.createElement('ul');
-    labelContainer.className += " label-container";
-
-    var greenLabel = document.createElement('li');
-    greenLabel.className += 'label green-label click';
-
-    var blueLabel = document.createElement('li');
-    blueLabel.className += 'label blue-label click';
-
-    var redLabel = document.createElement('li');
-    redLabel.className += 'label red-label click';
-
-    var yellowLabel = document.createElement('li');
-    yellowLabel.className += 'label yellow-label click';
-
-    var orangeLabel = document.createElement('li');
-    orangeLabel.className += 'label orange-label click';
-
-    var labelList = [greenLabel,blueLabel,redLabel,yellowLabel,orangeLabel];
-
-    for(var x = 0; x < labelList.length; x++) {
-        labelContainer.appendChild(labelList[x]);
-    }
-
-
-    labelPicker.appendChild(labelPickerForm);
-    labelPicker.appendChild(labelContainer);
-
-
-    labelB.addEventListener('click', function(){
-    if(labelPicker.style.display === "block") {
-        labelPicker.style.display = "none";
-        labelPickerInput.value = '';
-    }
-
-    else {
-    labelPicker.style.display = "block";
-    }
-});
-
-    //loop through all labels to add event listener
-    for(var x = 0; x < labelList.length; x++) {
-        labelList[x].addEventListener('click', function(){
-            var newLabel = document.createElement('li');
-            var newLabelsm = document.createElement('li');
-            var labelInput = '#' + card.id + " .label-input";
-
-            newLabel.className += this.className;
-            newLabel.innerHTML = $(labelInput).val();
-            newLabelsm.className += this.className;
-            newLabelsm.className += " label-sm";
-
-
-            selectedLabel.appendChild(newLabel);
-
-            var cardId = getCardID(card.id);
-            var miniCard = listOfList[cardId[0]][cardId[1]].miniView;
-
-            miniCard.lastElementChild.appendChild(newLabelsm);
-
-            $.ajax({
-            url: serverURL + '/boardManager/' + bid,
-            type: 'GET',
-            dataType: 'json',
-            success: function(json){
-                for(var x = 0; x < json.length; x++){
-                    if(getListId(json[x].lid) === listID){
-
-                        var cardIndex = getCardID(card.id)[1];
-                        var newLabelList = json[x].cards[cardIndex].labels;
-                        var colorClass = newLabel.classList[1];
-
-                        if(newLabelList[0][0] === '') {
-                            newLabelList[0][0] = colorClass;
-                            newLabelList[0][1] = newLabel.innerHTML;
-                        }
-                        else {
-                            newLabelList.push([colorClass,newLabel.innerHTML])
-                        }
-
-                        $.ajax({
-                            url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
-                            type: 'PATCH',
-                            data: {
-                                title: json[x].cards[cardIndex].title,
-                                dueDate: json[x].cards[cardIndex].dueDate,
-                                labels: JSON.stringify(newLabelList),
-                                members: JSON.stringify(json[x].cards[cardIndex].members),
-                                comments: JSON.stringify(json[x].cards[cardIndex].comments),
-                                cid: json[x].cards[cardIndex].cid,
-                                _id: json[x].cards[cardIndex]._id,
-                                description: json[x].cards[cardIndex].description
-                            },
-                            dataType: 'json',
-                            success: function(){}
-                        });
-                    }
-                }
-            }
-            });
-
-            labelPickerInput.value = '';
-
-
-        });
-    }
-
-
-
-
-    modalLabel.appendChild(labelText);
-    modalLabel.appendChild(selectedLabel);
-    modalLabel.appendChild(labelB);
-    modalLabel.appendChild(labelPicker);
-
-    //create card member selector
-
-    var modalMember = document.createElement('div');
-    modalMember.className += " member-list";
-
-    var memberText = document.createElement('h3');
-    memberText.innerHTML = "Members: ";
-    memberText.className += " inline";
-
-    var memberB = document.createElement('div');
-    memberB.className += " member-button button";
-    memberB.innerHTML = "Edit Members";
-
-    var selectedMember = document.createElement('ul');
-    selectedMember.className += " selected-label label-container inline for-member";
-
-    var memberPicker = document.createElement('div');
-    memberPicker.className += " picker member-picker";
-
-    var memberPickerForm = document.createElement('form');
-    memberPickerForm.className += "member-form";
-
-    var memberPickerInput = document.createElement('input');
-    memberPickerInput.className += " member-input";
-    memberPickerInput.type = "text";
-    memberPickerInput.placeholder = "Member Name";
-
-    memberPickerForm.appendChild(memberPickerInput);
-    memberPicker.appendChild(memberPickerForm);
-
-    memberB.addEventListener('click',function(){
-    if(memberPicker.style.display === "block") {
-        memberPicker.style.display = "none";
-    }
-
-    else {
-    memberPicker.style.display = "block";
-    }
-});
-
-    modalMember.appendChild(memberText);
-    modalMember.appendChild(memberB);
-    modalMember.appendChild(selectedMember);
-    modalMember.appendChild(memberPicker);
-
-    //create card description
-
-    var modalDescription = document.createElement('div');
-    modalDescription.className += " description";
-
-    var descTitle = document.createElement('h3');
-    descTitle.innerHTML = "Description";
-
-    var descText = document.createElement('p');
-    descText.className += "description-text";
-
-    var descEdit = document.createElement('textarea');
-    descEdit.className += "description-input";
-    descEdit.rows = 8;
-
-    var descButton = document.createElement('div');
-    descButton.className += " description-button button";
-    descButton.innerHTML = "Edit Description";
-
-    descButton.addEventListener('click',function(){
-    if(this.previousElementSibling.style.display === "block") {
-        this.previousElementSibling.style.display = "none";
-    }
-
-    else {
-        this.previousElementSibling.style.display = "block";
-        $(this).prev()[0].focus();
-    }
-});
-
-    modalDescription.appendChild(descTitle);
-    modalDescription.appendChild(descText);
-    modalDescription.appendChild(descEdit);
-    modalDescription.appendChild(descButton);
-
-    var modalComment = document.createElement('div');
-    modalComment.className += ' comment-section';
-
-    var commentTitle = document.createElement('h3');
-    commentTitle.innerHTML = "Comment";
-
-    var commentEdit = document.createElement('textarea');
-    commentEdit.className += "comment-input";
-    commentEdit.rows = 3;
-
-    var commentButton = document.createElement('div');
-    commentButton.className += " comment-button button";
-    commentButton.innerHTML = "Comment";
-
-    var commentList = document.createElement('ul');
-
-    // var comment = document.createElement('li');
-    // comment.className += ' comment';
-    //
-    // var commentUser = document.createElement('h4');
-    // commentUser.innerHTML = '300man33';
-    // commentUser.className = ' comment-user inline';
-    //
-    // var commentDate = document.createElement('p');
-    // commentDate.innerHTML = 'Jan 24, 2017 7:12pm';
-    // commentDate.className = ' comment-date inline';
-    //
-    // var commentText = document.createElement('p');
-    // commentText.innerHTML = 'blah blhaa adf defasd dsfd';
-    // commentText.className += ' comment-text';
-    //
-    // comment.appendChild(commentUser);
-    // comment.appendChild(commentDate);
-    // comment.appendChild(commentText);
-    //
-    // commentList.appendChild(comment);
-
-    modalComment.appendChild(commentTitle);
-    modalComment.appendChild(commentEdit);
-    modalComment.appendChild(commentButton);
-    modalComment.appendChild(commentList);
-
-    var modalFooter = document.createElement('div');
-    modalFooter.className += " modal-footer";
-
-    var removeB = document.createElement('div');
-    removeB.className += " button remove";
-    removeB.innerHTML = "Remove Card";
-
-    removeB.addEventListener('click',function(){
-        if(confirm("Warning! Are you sure you want to remove this card?")){
-            //remove html miniCard element
-            var splitID = getCardID(card.id);
-            listOfList[splitID[0]][splitID[1]].miniView.parentNode.removeChild(listOfList[splitID[0]][splitID[1]].miniView);
-          document.querySelector('body').removeChild(listOfList[splitID[0]][splitID[1]].modalView);
-            ////
-            $.ajax({
-            url: serverURL + '/boardManager/' + bid,
-            type: 'GET',
-            dataType: 'json',
-            success: function(json){
-                for(var x = 0; x < json.length; x++){
-                    if(getListId(json[x].lid) === listID){
-
-                        var cardIndex = getCardID(card.id)[1];
-
-                        $.ajax({
-                            url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
-                            type: 'DELETE',
-                            dataType: 'json',
-                            success: function() {}
-                        });
-
-
-                        for(var current = cardIndex+1; current < json[x].cards.length; current++) {
-
-                            var newCID = 'card-' + listID + '-' + (current-1);
-
-                            $.ajax({
-                                url: serverURL + '/list/' + json[x]._id + '/card/' + json[x].cards[current]._id,
-                                type: 'PATCH',
-                                data: {
-                                    title: json[x].cards[current].title,
-                                    dueDate: json[x].cards[current].dueDate,
-                                    labels: JSON.stringify(json[x].cards[current].labels),
-                                    members: JSON.stringify(json[x].cards[current].members),
-                                    cid: newCID,
-                                    _id: json[x].cards[current]._id,
-                                    description: json[x].cards[current].description
-                                    },
-                                dataType: 'json',
-                                success: function(){}
-                        });
-                        }
-                        break;
-                    }
-                }
-            }
-            });
-            ////
-            listOfList[splitID[0]].splice(splitID[1],1);
-
-            for(var x = splitID[1]; x < listOfList[splitID[0]].length; x++){
-                listOfList[splitID[0]][x].miniView.id = "miniCard-" + splitID[0] + "-" + x;
-
-                listOfList[splitID[0]][x].modalView.id = "modalCard-" + splitID[0] + "-" + x;
-            }
-
-            bg.style.display = "none";
-        }
-        else {}
-    });
-
-    modalFooter.appendChild(removeB);
-
-
-    //Add divs to card
-    card.appendChild(modalHeader);
-    card.appendChild(modalDate);
-    card.appendChild(modalLabel);
-    card.appendChild(modalMember);
-    card.appendChild(modalDescription);
-    card.appendChild(modalComment);
-    card.appendChild(modalFooter);
-
-    document.querySelector('body').appendChild(card);
-
-    $('#' + card.id + ' .for-label').on('click','li',function(e){
-        console.log("this: " + this.parentElement);
-
-        var labelIndex = $(this).index();
-        //if the li is from the label picker section
-
-        var splitID = getCardID(card.id);
-        var mini = "#miniCard-" + splitID[0] + "-" + splitID[1];
-
-        $(mini + " ul").children()[labelIndex].remove();
-        $(this).remove();
-
-        $.ajax({
-        url: serverURL + '/boardManager/' + bid,
-        type: 'GET',
-        dataType: 'json',
-        success: function(json){
-            for(var x = 0; x < json.length; x++){
-                if(getListId(json[x].lid) === listID){
-
-                    var cardIndex = getCardID(card.id)[1];
-                    var newLabelList = json[x].cards[cardIndex].labels;
-
-                    if(newLabelList.length <= 1) {
-                        newLabelList = [['','']];
-                    }
-                    else {
-                        newLabelList.splice(labelIndex,1);
-                    }
-
-                    $.ajax({
-                        url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
-                        type: 'PATCH',
-                        data: {
-                            title: json[x].cards[cardIndex].title,
-                            dueDate: json[x].cards[cardIndex].dueDate,
-                            labels: JSON.stringify(newLabelList),
-                            members: JSON.stringify(json[x].cards[cardIndex].members),
-                            comments: JSON.stringify(json[x].cards[cardIndex].comments),
-                            cid: json[x].cards[cardIndex].cid,
-                            _id: json[x].cards[cardIndex]._id,
-                            description: json[x].cards[cardIndex].description
-                        },
-                        dataType: 'json',
-                        success: function(){}
-                    });
-                }
-            }
-        }
-        });
-
-
-
-
-    });
-
-    $('#' + card.id + ' .for-member').on('click', 'li', function(e){
-        var labelIndex = $(this).index();
-
-        $(this).remove();
-
-        $.ajax({
-        url: serverURL + '/boardManager/' + bid,
-        type: 'GET',
-        dataType: 'json',
-        success: function(json){
-            for(var x = 0; x < json.length; x++){
-                if(getListId(json[x].lid) === listID){
-
-                    var cardIndex = getCardID(card.id)[1];
-                    var newMemList = json[x].cards[cardIndex].members;
-                    if(newMemList.length <= 1) {
-                        newMemList = [''];
-                    }
-                    else {
-                        newMemList.splice(labelIndex,1);
-                    }
-
-                    $.ajax({
-                        url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
-                        type: 'PATCH',
-                        data: {
-                            title: json[x].cards[cardIndex].title,
-                            dueDate: json[x].cards[cardIndex].dueDate,
-                            labels: JSON.stringify(json[x].cards[cardIndex].labels),
-                            members: JSON.stringify(newMemList),
-                            comments: JSON.stringify(json[x].cards[cardIndex].comments),
-                            cid: json[x].cards[cardIndex].cid,
-                            _id: json[x].cards[cardIndex]._id,
-                            description: json[x].cards[cardIndex].description
-                        },
-                        dataType: 'json',
-                        success: function(){}
-                    });
-                }
-            }
-        }
-        });
-
-    });
-
-    $('#' + card.id + ' .label-form').on('submit',function(e){
-        e.preventDefault();
-    });
-
-    $('#' + card.id + ' .member-form').on('submit',function(e){
-        e.preventDefault();
-        //get value from input of card that triggered
-        //insert into same card a label of the input
-        console.log(card.id);
-
-        if($(this).children()[0].value !== '') {
-            var memName = $(this).children()[0].value;
-            var newMember = $('<li>', {"class": "label click"});
-            newMember.text(memName);
-
-            $(this).parent().prev().append(newMember);
-
-            $.ajax({
-            url: serverURL + '/boardManager/' + bid,
-            type: 'GET',
-            dataType: 'json',
-            success: function(json){
-                for(var x = 0; x < json.length; x++){
-                    if(getListId(json[x].lid) === listID){
-
-                        var cardIndex = getCardID(card.id)[1];
-                        var newMemList = json[x].cards[cardIndex].members;
-                        if(newMemList[0] === '') {
-                            newMemList[0] = memName;
-                        }
-                        else {
-                            newMemList.push(memName);
-                        }
-
-                        $.ajax({
-                            url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
-                            type: 'PATCH',
-                            data: {
-                                title: json[x].cards[cardIndex].title,
-                                dueDate: json[x].cards[cardIndex].dueDate,
-                                labels: JSON.stringify(json[x].cards[cardIndex].labels),
-                                members: JSON.stringify(newMemList),
-                                comments: JSON.stringify(json[x].cards[cardIndex].comments),
-                                cid: json[x].cards[cardIndex].cid,
-                                _id: json[x].cards[cardIndex]._id,
-                                description: json[x].cards[cardIndex].description
-                            },
-                            dataType: 'json',
-                            success: function(){}
-                        });
-                    }
-                }
-            }
-            });
-
-            $(this).children()[0].value = '';
-        }
-    });
-
-    $('#' + card.id + ' .description-input').on('focusin', function(e){
-        console.log(card.id);
-        console.log($(this).prev()[0].innerHTML);
-        $(this).val($(this).prev()[0].innerHTML);
-
-        $(this).prev()[0].innerHTML = '';
-
-
-    });
-
-    $('#' + card.id + ' .description-input').on('focusout', function(e){
-
-        var newDescription = $(this).val();
-
-        $(this).prev()[0].innerHTML = $(this).val();
-
-        $.ajax({
-            url: serverURL + '/boardManager/' + bid,
-            type: 'GET',
-            dataType: 'json',
-            success: function(json){
-                for(var x = 0; x < json.length; x++){
-                    if(getListId(json[x].lid) === listID){
-
-                        var cardIndex = getCardID(card.id)[1];
-
-                        $.ajax({
-                            url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
-                            type: 'PATCH',
-                            data: {
-                                title: json[x].cards[cardIndex].title,
-                                dueDate: json[x].cards[cardIndex].dueDate,
-                                labels: JSON.stringify(json[x].cards[cardIndex].labels),
-                                members: JSON.stringify(json[x].cards[cardIndex].members),
-                                comments: JSON.stringify(json[x].cards[cardIndex].comments),
-                                cid: json[x].cards[cardIndex].cid,
-                                _id: json[x].cards[cardIndex]._id,
-                                description: newDescription
-                            },
-                            dataType: 'json',
-                            success: function(){}
-                        });
-                        break;
-                }
-            }
-        }
-        });
-
-        $(this).css('display', 'none');
-
-    });
-
-    $('#' + card.id + ' .comment-button').on('click', function(e){
-        var comment = document.createElement('li');
-        comment.className += ' comment';
-
-        var userName = $('meta[name=username]').attr("content");
-
-        var today = new Date();
-        var date = (today.getMonth()+1)+'-'+today.getDate()+'-'+today.getFullYear();
-        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-        var dateTime = date+' '+time;
-
-        var commentInput = $('#' + card.id + ' .comment-input').val();
-
-        var commentUser = document.createElement('h4');
-        commentUser.innerHTML = userName;
-        commentUser.className = ' comment-user inline';
-
-        var commentDate = document.createElement('p');
-
-        commentDate.innerHTML = dateTime;
-        commentDate.className = ' comment-date inline';
-
-        var commentText = document.createElement('p');
-        commentText.innerHTML = commentInput;
-        commentText.className += ' comment-text';
-
-        comment.appendChild(commentUser);
-        comment.appendChild(commentDate);
-        comment.appendChild(commentText);
-
-        $('#' + card.id + ' .comment-section ul').prepend(comment);
-
-        $.ajax({
-        url: serverURL + '/boardManager/' + bid,
-        type: 'GET',
-        dataType: 'json',
-        success: function(json){
-            for(var x = 0; x < json.length; x++){
-                if(getListId(json[x].lid) === listID){
-
-                    var cardIndex = getCardID(card.id)[1];
-                    var newComList = json[x].cards[cardIndex].comments;
-                    if(newComList[0][0] === '') {
-                        newComList[0] = [userName,dateTime,commentInput];
-                    }
-                    else {
-                        newComList.push([userName,dateTime,commentInput]);
-                    }
-
-                    $.ajax({
-                        url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
-                        type: 'PATCH',
-                        data: {
-                            title: json[x].cards[cardIndex].title,
-                            dueDate: json[x].cards[cardIndex].dueDate,
-                            labels: JSON.stringify(json[x].cards[cardIndex].labels),
-                            comments: JSON.stringify(newComList),
-                            members: JSON.stringify(json[x].cards[cardIndex].members),
-                            cid: json[x].cards[cardIndex].cid,
-                            _id: json[x].cards[cardIndex]._id,
-                            description: json[x].cards[cardIndex].description
-                        },
-                        dataType: 'json',
-                        success: function(){}
-                    });
-                }
-            }
-        }
-        });
-
-        $('#' + card.id + ' .comment-input').val('');
-
-    });
-    return card;
 }
 
 
@@ -1325,7 +319,7 @@ function createList(hasTitle=false, newTitle='') {
         listInput.value = newTitle;
     }
     else {
-        listInput.value = "Title " + listOfList.length;
+        listInput.value = 'Title';
     }
 
 
@@ -1386,6 +380,968 @@ function createMiniCard(listID,cardIndex) {
 
 
 $(document).ready(function(){
+    var socket = io();
+    socket.emit('joinBoard', {bid: bid});
+
+    function createCard(listID, cardIndex){
+
+        //Create card div (card object)
+        var card = document.createElement("div");
+        card.className += " card";
+        card.id = "modalCard-" + listID + "-" + cardIndex;
+
+        //create card title
+        var modalHeader = document.createElement("div");
+        modalHeader.className += " modal-header";
+
+        var titleF = document.createElement("form");
+        titleF.className += " title-form";
+
+        var newTitle = document.createElement("input");
+        newTitle.className += " title";
+        newTitle.type = "text";
+        newTitle.value = "Title";
+
+        titleF.appendChild(newTitle);
+
+        var cardCloseButton = document.createElement("span");
+        cardCloseButton.className += " close";
+        cardCloseButton.innerHTML = "&times;";
+
+        var creatorHeader = document.createElement('h4');
+        creatorHeader.className += ' creator-header';
+        creatorHeader.innerHTML = $('meta[name=username]').attr("content");
+
+        //adds eventlistener to title
+        titleF.addEventListener('focusout',function(){
+            if(newTitle.value === "") {
+                newTitle.value = "Title";
+            }
+            var splitID = getCardID(card.id);
+            //listOfList[listID][cardIndex].miniView.firstChild.innerHTML = newTitle.value;
+            socket.emit('patchTitle', {bid: bid,
+                                       title: newTitle.value,
+                                       listID: splitID[0],
+                                       cardIndex: splitID[1]});
+
+            $.ajax({
+                url: serverURL + '/boardManager/' + bid,
+                type: 'GET',
+                dataType: 'json',
+                success: function(json){
+                    for(var x = 0; x < json.length; x++){
+                        if(getListId(json[x].lid) === listID){
+
+                            var cardIndex = getCardID(card.id)[1];
+                            $.ajax({
+                                url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                                type: 'PATCH',
+                                data: {
+                                    title: newTitle.value,
+                                    dueDate: json[x].cards[cardIndex].dueDate,
+                                    labels: JSON.stringify(json[x].cards[cardIndex].labels),
+                                    members: JSON.stringify(json[x].cards[cardIndex].members),
+                                    comments: JSON.stringify(json[x].cards[cardIndex].comments),
+                                    cid: json[x].cards[cardIndex].cid,
+                                    _id: json[x].cards[cardIndex]._id,
+                                    description: json[x].cards[cardIndex].description
+                                },
+                                dataType: 'json',
+                                success: function(){
+                                }
+                            });
+                            break;
+                    }
+                }
+            }
+            });
+
+        });
+        titleF.addEventListener('submit',function(e){
+        e.preventDefault();
+        newTitle.blur();
+        });
+
+        //add event listener to close button
+        cardCloseButton.addEventListener('click', function(){
+        bg.style.display = "none";
+        card.style.display = "none";
+        });
+
+        modalHeader.appendChild(titleF);
+        modalHeader.appendChild(cardCloseButton);
+        modalHeader.appendChild(creatorHeader);
+
+        //create card date selector
+        var modalDate = document.createElement("div");
+        modalDate.className += " modal-date";
+
+        var dateTitle = document.createElement("h3");
+        dateTitle.innerHTML = "Due Date: ";
+        dateTitle.className += " date-text inline";
+
+        var dateB = document.createElement("div");
+        dateB.innerHTML = "Edit Date";
+        dateB.className += " button";
+
+        var dateF = document.createElement("form");
+        dateF.className += " date-form";
+
+        var dateInput = document.createElement("input");
+        dateInput.class += " date-input";
+        dateInput.type = "datetime-local";
+
+        dateF.appendChild(dateInput);
+        //Add event listener to date button
+        //date input appears when date button is pressed
+        dateB.addEventListener('click', function(){
+            if(this.nextElementSibling.style.display === "block") {
+                this.nextElementSibling.style.display = "none";
+            }
+
+            else {
+            this.nextElementSibling.style.display = "block";
+            }
+        });
+
+        //changes date text when input is unfocused
+        dateF.addEventListener('focusout', function(){
+        if(dateInput.value !== "")
+        {
+            var splitID = getCardID(card.id);
+            var formatDate = dateInput.value.slice(0,10) + " @ " + dateInput.value.slice(11);
+            socket.emit('patchDate', {bid: bid,
+                                      date: formatDate,
+                                      listID: splitID[0],
+                                      cardIndex: splitID[1]});
+            $.ajax({
+                url: serverURL + '/boardManager/' + bid,
+                type: 'GET',
+                dataType: 'json',
+                success: function(json){
+                    for(var x = 0; x < json.length; x++){
+                        if(getListId(json[x].lid) === listID){
+
+                            var cardIndex = getCardID(card.id)[1];
+
+                            $.ajax({
+                                url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                                type: 'PATCH',
+                                data: {
+                                    title: json[x].cards[cardIndex].title,
+                                    dueDate: formatDate,
+                                    labels: JSON.stringify(json[x].cards[cardIndex].labels),
+                                    members: JSON.stringify(json[x].cards[cardIndex].members),
+                                    comments: JSON.stringify(json[x].cards[cardIndex].comments),
+                                    cid: json[x].cards[cardIndex].cid,
+                                    _id: json[x].cards[cardIndex]._id,
+                                    description: json[x].cards[cardIndex].description
+                                },
+                                dataType: 'json',
+                                success: function(){}
+                            });
+                            break;
+                    }
+                }
+            }
+            });
+        }
+
+        this.style.display = "none";
+
+    });
+
+        modalDate.appendChild(dateTitle);
+        modalDate.appendChild(dateB);
+        modalDate.appendChild(dateF);
+
+        //create card label selector
+
+        var modalLabel = document.createElement("div");
+        modalLabel.className += " modal-label";
+
+        var labelText = document.createElement("h5");
+        labelText.className += " inline";
+        labelText.innerHTML = "Label: ";
+        labelText.style.margin = "5px";
+
+        var selectedLabel = document.createElement('ul');
+        selectedLabel.className += " label-container inline selected-label for-label";
+
+        var labelB = document.createElement("div");
+        labelB.className += " label-button button";
+        labelB.innerHTML = "Add Label";
+
+        var labelPicker = document.createElement("div");
+        labelPicker.className += " picker label-picker";
+
+        var labelPickerForm = document.createElement('form');
+        labelPickerForm.className += " label-form";
+
+        var labelPickerInput = document.createElement('input');
+        labelPickerInput.className += " label-input";
+        labelPickerInput.type = "text";
+        labelPickerInput.placeholder = "Label Name";
+
+        labelPickerForm.appendChild(labelPickerInput);
+
+        var labelContainer = document.createElement('ul');
+        labelContainer.className += " label-container";
+
+        var greenLabel = document.createElement('li');
+        greenLabel.className += 'label green-label click';
+
+        var blueLabel = document.createElement('li');
+        blueLabel.className += 'label blue-label click';
+
+        var redLabel = document.createElement('li');
+        redLabel.className += 'label red-label click';
+
+        var yellowLabel = document.createElement('li');
+        yellowLabel.className += 'label yellow-label click';
+
+        var orangeLabel = document.createElement('li');
+        orangeLabel.className += 'label orange-label click';
+
+        var labelList = [greenLabel,blueLabel,redLabel,yellowLabel,orangeLabel];
+
+        for(var x = 0; x < labelList.length; x++) {
+            labelContainer.appendChild(labelList[x]);
+        }
+
+
+        labelPicker.appendChild(labelPickerForm);
+        labelPicker.appendChild(labelContainer);
+
+
+        labelB.addEventListener('click', function(){
+        if(labelPicker.style.display === "block") {
+            labelPicker.style.display = "none";
+            labelPickerInput.value = '';
+        }
+
+        else {
+        labelPicker.style.display = "block";
+        }
+    });
+
+        //loop through all labels to add event listener
+        for(var x = 0; x < labelList.length; x++) {
+            labelList[x].addEventListener('click', function(){
+                var color = this.className;
+                var cardId = getCardID(card.id);
+                var labelInput = '#' + card.id + " .label-input";
+
+                socket.emit('addLabel', {bid: bid,
+                                         listID: cardId[0],
+                                         cardID: cardId[1],
+                                         labelClass: color,
+                                         labelText: $(labelInput).val()});
+
+                $.ajax({
+                url: serverURL + '/boardManager/' + bid,
+                type: 'GET',
+                dataType: 'json',
+                success: function(json){
+                    for(var x = 0; x < json.length; x++){
+                        if(getListId(json[x].lid) === listID){
+
+                            var cardIndex = getCardID(card.id)[1];
+                            var newLabelList = json[x].cards[cardIndex].labels;
+                            var colorClass = color;
+
+                            if(newLabelList[0][0] === '') {
+                                newLabelList[0][0] = colorClass;
+                                newLabelList[0][1] = $(labelInput).val();
+                            }
+                            else {
+                                newLabelList.push([colorClass,$(labelInput).val()])
+                            }
+
+                            $.ajax({
+                                url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                                type: 'PATCH',
+                                data: {
+                                    title: json[x].cards[cardIndex].title,
+                                    dueDate: json[x].cards[cardIndex].dueDate,
+                                    labels: JSON.stringify(newLabelList),
+                                    members: JSON.stringify(json[x].cards[cardIndex].members),
+                                    comments: JSON.stringify(json[x].cards[cardIndex].comments),
+                                    cid: json[x].cards[cardIndex].cid,
+                                    _id: json[x].cards[cardIndex]._id,
+                                    description: json[x].cards[cardIndex].description
+                                },
+                                dataType: 'json',
+                                success: function(){}
+                            });
+                        }
+                    }
+                }
+                });
+
+                labelPickerInput.value = '';
+
+
+            });
+        }
+
+
+
+
+        modalLabel.appendChild(labelText);
+        modalLabel.appendChild(selectedLabel);
+        modalLabel.appendChild(labelB);
+        modalLabel.appendChild(labelPicker);
+
+        //create card member selector
+
+        var modalMember = document.createElement('div');
+        modalMember.className += " member-list";
+
+        var memberText = document.createElement('h3');
+        memberText.innerHTML = "Members: ";
+        memberText.className += " inline";
+
+        var memberB = document.createElement('div');
+        memberB.className += " member-button button";
+        memberB.innerHTML = "Edit Members";
+
+        var selectedMember = document.createElement('ul');
+        selectedMember.className += " selected-label label-container inline for-member";
+
+        var memberPicker = document.createElement('div');
+        memberPicker.className += " picker member-picker";
+
+        var memberPickerForm = document.createElement('form');
+        memberPickerForm.className += "member-form";
+
+        var memberPickerInput = document.createElement('input');
+        memberPickerInput.className += " member-input";
+        memberPickerInput.type = "text";
+        memberPickerInput.placeholder = "Member Name";
+
+        memberPickerForm.appendChild(memberPickerInput);
+        memberPicker.appendChild(memberPickerForm);
+
+        memberB.addEventListener('click',function(){
+        if(memberPicker.style.display === "block") {
+            memberPicker.style.display = "none";
+        }
+
+        else {
+        memberPicker.style.display = "block";
+        }
+    });
+
+        modalMember.appendChild(memberText);
+        modalMember.appendChild(memberB);
+        modalMember.appendChild(selectedMember);
+        modalMember.appendChild(memberPicker);
+
+        //create card description
+
+        var modalDescription = document.createElement('div');
+        modalDescription.className += " description";
+
+        var descTitle = document.createElement('h3');
+        descTitle.innerHTML = "Description";
+
+        var descText = document.createElement('p');
+        descText.className += "description-text";
+
+        var descEdit = document.createElement('textarea');
+        descEdit.className += "description-input";
+        descEdit.rows = 8;
+
+        var descButton = document.createElement('div');
+        descButton.className += " description-button button";
+        descButton.innerHTML = "Edit Description";
+
+        descButton.addEventListener('click',function(){
+        if(this.previousElementSibling.style.display === "block") {
+            this.previousElementSibling.style.display = "none";
+        }
+
+        else {
+            this.previousElementSibling.style.display = "block";
+            $(this).prev()[0].focus();
+        }
+    });
+
+        modalDescription.appendChild(descTitle);
+        modalDescription.appendChild(descText);
+        modalDescription.appendChild(descEdit);
+        modalDescription.appendChild(descButton);
+
+        var modalComment = document.createElement('div');
+        modalComment.className += ' comment-section';
+
+        var commentTitle = document.createElement('h3');
+        commentTitle.innerHTML = "Comment";
+
+        var commentEdit = document.createElement('textarea');
+        commentEdit.className += "comment-input";
+        commentEdit.rows = 3;
+
+        var commentButton = document.createElement('div');
+        commentButton.className += " comment-button button";
+        commentButton.innerHTML = "Comment";
+
+        var commentList = document.createElement('ul');
+
+        modalComment.appendChild(commentTitle);
+        modalComment.appendChild(commentEdit);
+        modalComment.appendChild(commentButton);
+        modalComment.appendChild(commentList);
+
+        var modalFooter = document.createElement('div');
+        modalFooter.className += " modal-footer";
+
+        var removeB = document.createElement('div');
+        removeB.className += " button remove";
+        removeB.innerHTML = "Remove Card";
+
+
+        removeB.addEventListener('click',function(){
+            if(confirm("Warning! Are you sure you want to remove this card?")){
+                //remove html miniCard element
+                var splitID = getCardID(card.id);
+                console.log(card);
+            //     listOfList[splitID[0]][splitID[1]].miniView.parentNode.removeChild(listOfList[splitID[0]][splitID[1]].miniView);
+            //   document.querySelector('body').removeChild(listOfList[splitID[0]][splitID[1]].modalView);
+
+                $.ajax({
+                url: serverURL + '/boardManager/' + bid,
+                type: 'GET',
+                dataType: 'json',
+                success: function(json){
+                    for(var x = 0; x < json.length; x++){
+                        if(getListId(json[x].lid) === listID){
+
+                            var cardIndex = getCardID(card.id)[1];
+
+                            $.ajax({
+                                url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                                type: 'DELETE',
+                                dataType: 'json',
+                                success: function() {
+
+                                }
+                            });
+
+
+                            for(var current = cardIndex+1; current < json[x].cards.length; current++) {
+
+                                var newCID = 'card-' + listID + '-' + (current-1);
+
+                                $.ajax({
+                                    url: serverURL + '/list/' + json[x]._id + '/card/' + json[x].cards[current]._id,
+                                    type: 'PATCH',
+                                    data: {
+                                        title: json[x].cards[current].title,
+                                        dueDate: json[x].cards[current].dueDate,
+                                        labels: JSON.stringify(json[x].cards[current].labels),
+                                        members: JSON.stringify(json[x].cards[current].members),
+                                        cid: newCID,
+                                        _id: json[x].cards[current]._id,
+                                        description: json[x].cards[current].description
+                                        },
+                                    dataType: 'json',
+                                    success: function(){}
+                            });
+                            }
+                            break;
+                        }
+                    }
+                    socket.emit('removeCard', {bid: bid,
+                                               splitID: splitID});
+                }
+                });
+                ////
+                // listOfList[splitID[0]].splice(splitID[1],1);
+                //
+                // for(var x = splitID[1]; x < listOfList[splitID[0]].length; x++){
+                //     listOfList[splitID[0]][x].miniView.id = "miniCard-" + splitID[0] + "-" + x;
+                //
+                //     listOfList[splitID[0]][x].modalView.id = "modalCard-" + splitID[0] + "-" + x;
+                // }
+                //
+                // bg.style.display = "none";
+            }
+            else {}
+        });
+
+        modalFooter.appendChild(removeB);
+
+
+        //Add divs to card
+        card.appendChild(modalHeader);
+        card.appendChild(modalDate);
+        card.appendChild(modalLabel);
+        card.appendChild(modalMember);
+        card.appendChild(modalDescription);
+        card.appendChild(modalComment);
+        card.appendChild(modalFooter);
+
+        document.querySelector('body').appendChild(card);
+
+        $('#' + card.id + ' .for-label').on('click','li',function(e){
+            console.log("this: " + this.parentElement);
+
+            var labelIndex = $(this).index();
+            //if the li is from the label picker section
+
+            var splitID = getCardID(card.id);
+            var mini = "#miniCard-" + splitID[0] + "-" + splitID[1];
+            var modal = '#modalCard-' + splitID[0] + '-' + splitID[1];
+
+            socket.emit('deleteLabel', {bid: bid,
+                                        miniID: mini,
+                                        modalID: modal,
+                                        index: labelIndex})
+
+            // $(mini + " ul").children()[labelIndex].remove();
+            // $(modal + ' .for-label').children()[labelIndex].remove();
+            //$(this).remove();
+
+            $.ajax({
+            url: serverURL + '/boardManager/' + bid,
+            type: 'GET',
+            dataType: 'json',
+            success: function(json){
+                for(var x = 0; x < json.length; x++){
+                    if(getListId(json[x].lid) === listID){
+
+                        var cardIndex = getCardID(card.id)[1];
+                        var newLabelList = json[x].cards[cardIndex].labels;
+
+                        if(newLabelList.length <= 1) {
+                            newLabelList = [['','']];
+                        }
+                        else {
+                            newLabelList.splice(labelIndex,1);
+                        }
+
+                        $.ajax({
+                            url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                            type: 'PATCH',
+                            data: {
+                                title: json[x].cards[cardIndex].title,
+                                dueDate: json[x].cards[cardIndex].dueDate,
+                                labels: JSON.stringify(newLabelList),
+                                members: JSON.stringify(json[x].cards[cardIndex].members),
+                                comments: JSON.stringify(json[x].cards[cardIndex].comments),
+                                cid: json[x].cards[cardIndex].cid,
+                                _id: json[x].cards[cardIndex]._id,
+                                description: json[x].cards[cardIndex].description
+                            },
+                            dataType: 'json',
+                            success: function(){}
+                        });
+                    }
+                }
+            }
+            });
+
+        });
+
+
+        $('#' + card.id + ' .for-member').on('click', 'li', function(e){
+            var labelIndex = $(this).index();
+
+            socket.emit('deleteMem', {bid:bid,
+                                      memForm: '#' + card.id + ' .for-member',
+                                      memIndex: labelIndex});
+
+            $.ajax({
+            url: serverURL + '/boardManager/' + bid,
+            type: 'GET',
+            dataType: 'json',
+            success: function(json){
+                for(var x = 0; x < json.length; x++){
+                    if(getListId(json[x].lid) === listID){
+
+                        var cardIndex = getCardID(card.id)[1];
+                        var newMemList = json[x].cards[cardIndex].members;
+                        if(newMemList.length <= 1) {
+                            newMemList = [''];
+                        }
+                        else {
+                            newMemList.splice(labelIndex,1);
+                        }
+
+                        $.ajax({
+                            url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                            type: 'PATCH',
+                            data: {
+                                title: json[x].cards[cardIndex].title,
+                                dueDate: json[x].cards[cardIndex].dueDate,
+                                labels: JSON.stringify(json[x].cards[cardIndex].labels),
+                                members: JSON.stringify(newMemList),
+                                comments: JSON.stringify(json[x].cards[cardIndex].comments),
+                                cid: json[x].cards[cardIndex].cid,
+                                _id: json[x].cards[cardIndex]._id,
+                                description: json[x].cards[cardIndex].description
+                            },
+                            dataType: 'json',
+                            success: function(){}
+                        });
+                    }
+                }
+            }
+            });
+
+        });
+
+        $('#' + card.id + ' .label-form').on('submit',function(e){
+            e.preventDefault();
+        });
+
+        $('#' + card.id + ' .member-form').on('submit',function(e){
+            e.preventDefault();
+            //get value from input of card that triggered
+            //insert into same card a label of the input
+            console.log(card.id);
+
+            if($(this).children()[0].value !== '') {
+                var memName = $('#' + card.id + ' .member-form').children()[0].value;
+
+                socket.emit('addMem', {bid:bid,
+                                       memForm: '#' + card.id + ' .member-form',
+                                       memName: memName,
+                                       });
+
+                $.ajax({
+                url: serverURL + '/boardManager/' + bid,
+                type: 'GET',
+                dataType: 'json',
+                success: function(json){
+                    for(var x = 0; x < json.length; x++){
+                        if(getListId(json[x].lid) === listID){
+
+                            var cardIndex = getCardID(card.id)[1];
+                            var newMemList = json[x].cards[cardIndex].members;
+                            if(newMemList[0] === '') {
+                                newMemList[0] = memName;
+                            }
+                            else {
+                                newMemList.push(memName);
+                            }
+
+                            $.ajax({
+                                url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                                type: 'PATCH',
+                                data: {
+                                    title: json[x].cards[cardIndex].title,
+                                    dueDate: json[x].cards[cardIndex].dueDate,
+                                    labels: JSON.stringify(json[x].cards[cardIndex].labels),
+                                    members: JSON.stringify(newMemList),
+                                    comments: JSON.stringify(json[x].cards[cardIndex].comments),
+                                    cid: json[x].cards[cardIndex].cid,
+                                    _id: json[x].cards[cardIndex]._id,
+                                    description: json[x].cards[cardIndex].description
+                                },
+                                dataType: 'json',
+                                success: function(){}
+                            });
+                        }
+                    }
+                }
+                });
+
+                $(this).children()[0].value = '';
+            }
+        });
+
+        $('#' + card.id + ' .description-input').on('focusin', function(e){
+            console.log(card.id);
+            console.log($(this).prev()[0].innerHTML);
+            $(this).val($(this).prev()[0].innerHTML);
+
+            $(this).prev()[0].innerHTML = '';
+
+
+        });
+
+        $('#' + card.id + ' .description-input').on('focusout', function(e){
+
+            var newDescription = $(this).val();
+
+            socket.emit('patchDesc', {bid: bid,
+                                      desc: newDescription,
+                                      descForm: '#' + card.id + ' .description-input'});
+
+            $.ajax({
+                url: serverURL + '/boardManager/' + bid,
+                type: 'GET',
+                dataType: 'json',
+                success: function(json){
+                    for(var x = 0; x < json.length; x++){
+                        if(getListId(json[x].lid) === listID){
+
+                            var cardIndex = getCardID(card.id)[1];
+
+                            $.ajax({
+                                url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                                type: 'PATCH',
+                                data: {
+                                    title: json[x].cards[cardIndex].title,
+                                    dueDate: json[x].cards[cardIndex].dueDate,
+                                    labels: JSON.stringify(json[x].cards[cardIndex].labels),
+                                    members: JSON.stringify(json[x].cards[cardIndex].members),
+                                    comments: JSON.stringify(json[x].cards[cardIndex].comments),
+                                    cid: json[x].cards[cardIndex].cid,
+                                    _id: json[x].cards[cardIndex]._id,
+                                    description: newDescription
+                                },
+                                dataType: 'json',
+                                success: function(){}
+                            });
+                            break;
+                    }
+                }
+            }
+            });
+
+            $(this).css('display', 'none');
+
+        });
+
+        $('#' + card.id + ' .comment-button').on('click', function(e){
+            // var comment = document.createElement('li');
+            // comment.className += ' comment';
+
+            var userName = $('meta[name=username]').attr("content");
+
+            var today = new Date();
+            var date = (today.getMonth()+1)+'-'+today.getDate()+'-'+today.getFullYear();
+            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            var dateTime = date+' '+time;
+
+            var commentInput = $('#' + card.id + ' .comment-input').val();
+
+            socket.emit('addComment', {bid:bid,
+                                       dateTime: dateTime,
+                                       userName: userName,
+                                       commentText: $('#' + card.id + ' .comment-input').val(),
+                                       commentForm: '#' + card.id + ' .comment-section ul'});
+            // var commentUser = document.createElement('h4');
+            // commentUser.innerHTML = userName;
+            // commentUser.className = ' comment-user inline';
+
+
+            // var commentDate = document.createElement('p');
+            //
+            // commentDate.innerHTML = dateTime;
+            // commentDate.className = ' comment-date inline';
+
+            // var commentText = document.createElement('p');
+            // commentText.innerHTML = commentInput;
+            // commentText.className += ' comment-text';
+
+            // comment.appendChild(commentUser);
+            // comment.appendChild(commentDate);
+            // comment.appendChild(commentText);
+            //
+            // $('#' + card.id + ' .comment-section ul').prepend(comment);
+
+            $.ajax({
+            url: serverURL + '/boardManager/' + bid,
+            type: 'GET',
+            dataType: 'json',
+            success: function(json){
+                for(var x = 0; x < json.length; x++){
+                    if(getListId(json[x].lid) === listID){
+
+                        var cardIndex = getCardID(card.id)[1];
+                        var newComList = json[x].cards[cardIndex].comments;
+                        if(newComList[0][0] === '') {
+                            newComList[0] = [userName,dateTime,commentInput];
+                        }
+                        else {
+                            newComList.push([userName,dateTime,commentInput]);
+                        }
+
+                        $.ajax({
+                            url: serverURL + '/list/' + json[x]._id + '/card/' + getAPICardID(card.className),
+                            type: 'PATCH',
+                            data: {
+                                title: json[x].cards[cardIndex].title,
+                                dueDate: json[x].cards[cardIndex].dueDate,
+                                labels: JSON.stringify(json[x].cards[cardIndex].labels),
+                                comments: JSON.stringify(newComList),
+                                members: JSON.stringify(json[x].cards[cardIndex].members),
+                                cid: json[x].cards[cardIndex].cid,
+                                _id: json[x].cards[cardIndex]._id,
+                                description: json[x].cards[cardIndex].description
+                            },
+                            dataType: 'json',
+                            success: function(){}
+                        });
+                    }
+                }
+            }
+            });
+
+            $('#' + card.id + ' .comment-input').val('');
+
+        });
+        return card;
+    }
+
+    socket.on('addComment', function(msg){
+        var comment = document.createElement('li');
+        comment.className += ' comment';
+
+        var commentUser = document.createElement('h4');
+        commentUser.innerHTML = msg.userName;
+        commentUser.className = ' comment-user inline';
+
+        var commentDate = document.createElement('p');
+
+        commentDate.innerHTML = msg.dateTime;
+        commentDate.className = ' comment-date inline';
+
+        var commentText = document.createElement('p');
+        commentText.innerHTML = msg.commentText;
+        commentText.className += ' comment-text';
+
+        comment.appendChild(commentUser);
+        comment.appendChild(commentDate);
+        comment.appendChild(commentText);
+
+        $(msg.commentForm).prepend(comment);
+    });
+
+    socket.on('patchDesc', function(desc){
+        $(desc.descForm).prev()[0].innerHTML = desc.desc;
+    });
+
+    socket.on('addMem', function(mem){
+        var newMember = $('<li>', {"class": "label click"});
+        newMember.text(mem.memName);
+        $(mem.memForm).parent().prev().append(newMember);
+    });
+    socket.on('deleteMem', function(mem){
+        $(mem.memForm).children()[mem.memIndex].remove();
+    });
+
+    socket.on('addLabel', function(label){
+        var newLabel = document.createElement('li');
+        var newLabelsm = document.createElement('li');
+
+        newLabel.className += label.labelClass;
+        newLabel.innerHTML = label.labelText;
+        newLabelsm.className += label.labelClass;
+        newLabelsm.className += " label-sm";
+
+        var selectedLabel = '#modalCard-' + label.listID + '-' + label.cardID + ' .for-label';
+        $(selectedLabel).append(newLabel);
+
+        var miniCard = listOfList[label.listID][label.cardID].miniView;
+
+        miniCard.lastElementChild.appendChild(newLabelsm);
+
+    });
+
+    socket.on('deleteLabel', function(label){
+        $(label.miniID + " ul").children()[label.index].remove();
+        $(label.modalID + ' .for-label').children()[label.index].remove();
+    });
+
+    socket.on('patchTitle', function(title){
+        listOfList[title.listID][title.cardIndex].miniView.firstChild.innerHTML = title.title;
+        var modalID = listOfList[title.listID][title.cardIndex].modalView.id;
+
+        console.log(modalID);
+        $(modalID + ' .title-form').val(title.title);
+    });
+
+    socket.on('patchDate', function(date){
+        var modCard = '#modalCard-' + date.listID + '-' + date.cardIndex;
+        console.log(modCard);
+        $(modCard + ' .date-text').text('Due Date: ' + date.date);
+    });
+
+    socket.on('removeCard', function(splitID){
+        console.log(splitID);
+        console.log(listOfList);
+        listOfList[splitID[0]][splitID[1]].miniView.parentNode.removeChild(listOfList[splitID[0]][splitID[1]].miniView);
+        document.querySelector('body').removeChild(listOfList[splitID[0]][splitID[1]].modalView);
+
+        listOfList[splitID[0]].splice(splitID[1],1);
+
+        for(var x = splitID[1]; x < listOfList[splitID[0]].length; x++){
+            listOfList[splitID[0]][x].miniView.id = "miniCard-" + splitID[0] + "-" + x;
+
+            listOfList[splitID[0]][x].modalView.id = "modalCard-" + splitID[0] + "-" + x;
+        }
+
+        bg.style.display = "none";
+
+
+    });
+
+    socket.on('removeList', function(list){
+        console.log(list);
+        //remove modal cards from html
+        for(var x = 0; x < listOfList[list.index].length; x++) {
+            document.querySelector('body').removeChild(listOfList[list.index][x].modalView);
+        }
+
+        //removes mini card and list from html
+        //newList.parentElement.removeChild(newList);
+        $("#" + list.lid).remove();
+
+        //updates list id after deleted list to be one less
+
+        for(var x = list.index+1; x < listOfList.length; x++) {
+            document.getElementById("list-" + x).id =
+                "list-" + (x-1);
+        }
+
+        //removes deleted list from data structure
+        listOfList.splice(list.index, 1);
+
+        //changes all lists' id and card id after deleted list
+        for(var x = list.index; x < listOfList.length; x++) {
+            for(var y = 0; y < listOfList[x].length; y++) {
+                var prevId = getCardID(listOfList[x][y].miniView.id);
+
+                listOfList[x][y].miniView.id = "miniCard-" + x + "-" + y;
+
+                listOfList[x][y].modalView.id = "modalCard-" + x + "-" + y;
+            }
+        }
+
+
+    });
+
+    socket.on('addList', function(){
+        var newList = createList();
+    });
+
+    socket.on('addCard', function(card){
+        var listID = card.listID;
+        var cardIndex = card.cardIndex;
+
+        //creates the mini card view
+        var miniCard = createMiniCard(listID, cardIndex);
+        var modalCard = createCard(listID,cardIndex);
+
+        var card = {miniView: miniCard, modalView: modalCard};
+
+        miniCard.addEventListener('click',function(){
+            modalCard.style.display = "block";
+            bg.style.display = "block";
+
+            bgGetID(modalCard.id);
+        });
+
+        //append card into a list in a list
+        listOfList[listID].push(card);
+
+    });
     $.ajax({
         url: serverURL + '/boardManager/' + bid,
         type: 'GET',
@@ -1482,7 +1438,183 @@ $(document).ready(function(){
             }
         }
     });
+    $('.lol').on('click',".list-close", function(e){
+        if(confirm("Warning! Are you sure you want to delete this list?" + e.target.classList)) {
 
+            var index = getListId(e.target.parentElement.id);
+            var lid = e.target.parentElement.id;
+
+            socket.emit('removeList', {index: index,
+                                        bid: bid,
+                                        lid: lid,
+                                    });
+
+            //delete list from api
+            $.ajax({
+                url: serverURL + '/boardManager/' + bid,
+                type: 'GET',
+                dataType: 'json',
+                success: function(json) {
+                    for(var x = 0; x < json.length; x++) {
+
+                        if(json[x].lid === lid) {
+                            var apiListID = json[x]._id;
+
+                            $.ajax({
+                                url: serverURL + '/boardManager/' + bid + '/list/' + apiListID,
+                                type: 'DELETE',
+                                dataType: 'json',
+                                success: function(){}
+                            });
+
+                            $.ajax({
+                                url: serverURL + '/list/' +apiListID,
+                                type: 'DELETE',
+                                dataType: 'json',
+                                success: function(){}
+                            });
+                        }
+                        else if(getListId(json[x].lid) > getListId(lid)) {
+                            var apiListID = json[x]._id;
+
+                            $.ajax({
+                                url: serverURL + '/list/' +apiListID,
+                                type: 'PATCH',
+                                data: {
+                                    lid: 'list-' + (getListId(json[x].lid)-1)
+                                },
+                                dataType: 'json',
+                                success: function(){}
+                            });
+
+                            for(var cardIndex = 0; cardIndex < json[x].cards.length; cardIndex++){
+
+                                var currentCard = json[x].cards[cardIndex];
+
+                                var splitID = getCardID(currentCard.cid);
+                                var newCID = 'card-' + (splitID[0] - 1) + '-' + splitID[1];
+
+                                $.ajax({
+                                url: serverURL + '/list/' + apiListID + '/card/' + currentCard._id,
+                                type: 'PATCH',
+                                data: {
+                                    title: currentCard.title,
+                                    description: currentCard.description,
+                                    cid: newCID,
+                                    members: JSON.stringify(currentCard.members),
+                                    labels: JSON.stringify(currentCard.labels),
+                                    dueDate: currentCard.dueDate
+                                },
+                                dataType: 'json',
+                                sucess: function(){}
+                            });
+                            }
+
+                        }
+                    }
+                }
+            });
+        }
+    });
+
+    addList.addEventListener('click', function(){
+
+        $.ajax({
+            url: serverURL + '/list/' + $('meta[name=bid]').attr("content"),
+            type: 'POST',
+            data: {
+                title: 'Title',
+                lid: 'list-'+ (listOfList.length)
+            },
+            dataType: 'json',
+            success: function(){
+                socket.emit('addList', {bid:bid});
+            }
+        });
+
+    });
+
+    $('.lol').on("click", ".add-card", function(e){
+
+        //get index of list and cardlist for this card
+        var listID = getListId(e.target.parentElement.id);
+        var cardIndex = listOfList[listID].length;
+
+        socket.emit('addCard', {
+                                bid:bid,
+                                listID: listID,
+                                cardIndex: cardIndex
+                                });
+
+        //creates the actual card
+        //bg.style.display = "block";
+        //var modalCard = createCard(listID,cardIndex);
+        //modalCard.style.display = "block";
+        //bgGetID(modalCard.id);
+
+        //id format of modalCard and miniCard
+        //modalCard = "modalCard [list index] [cardlist index]
+        //miniCard = "miniCard [list index] [cardlist index]
+
+        //create object literal containing both miniCard and modalCard
+        // var card = {miniView: miniCard, modalView: modalCard};
+
+        $.ajax({
+            url: serverURL + '/boardManager/' + bid,
+            type: 'GET',
+            dataType: 'json',
+            success: function(json){
+                for(var x = 0; x < json.length; x++) {
+                    console.log(e.target.parentElement.id);
+                    if(e.target.parentElement.id === json[x].lid){
+                        var jsonListID = json[x]._id;
+                        console.log(jsonListID);
+                        $.ajax({
+                            url: serverURL + '/list/'+ jsonListID + '/card',
+                            type: 'POST',
+                            data: {
+                                cid: 'card-' + listID + '-' + cardIndex,
+                                title: $('#modalCard-' + listID + '-' + cardIndex + ' .title').val(),
+                                creator: $('meta[name=username]').attr("content"),
+                                labels: JSON.stringify([['','']]),
+                                dueDate: '',
+                                members: JSON.stringify(['']),
+                                comments: JSON.stringify([['','','']]),
+                                description: ''
+                            },
+                            dataType: 'json',
+                            success: function(){
+                                $.ajax({
+                                    url: serverURL + '/boardManager/' + bid,
+                                    type: 'GET',
+                                    dataType: 'json',
+                                    success: function(json) {
+                                        var lastCard = json[x].cards.length-1;
+
+                                        var apiCardID = json[x].cards[lastCard]._id;
+
+                                        $('#modalCard-' + listID + '-' + cardIndex).addClass(apiCardID);
+                                    }
+
+                                });
+                            }
+                        });
+                        break;
+                    }
+                }
+            }
+        });
+
+        // miniCard.addEventListener('click',function(){
+        //     modalCard.style.display = "block";
+        //     bg.style.display = "block";
+        //
+        //     bgGetID(modalCard.id);
+        // });
+        //
+        // //append card into a list in a list
+        // listOfList[listID].push(card);
+    });
 
     //prepopulateBoard();
     //createBoard();

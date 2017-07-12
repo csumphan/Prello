@@ -84,12 +84,7 @@ router.delete('/:bid', function(req, res){
        if(err) {
            return console.log(err);
        }
-       console.log('this biddddd$#$#$#');
-       console.log(bid);
         LoginInfo.findOne({_id: req.session.user._id}, function(err, user){
-            console.log('*****!*!**!*!*!*!*!*!*');
-            console.log(user);
-
             if(err){
                 console.log(err);
             }

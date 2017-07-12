@@ -62,7 +62,6 @@ router.patch('/:lid', function(req, res){
         if(err){
             console.log(err);
         }
-        console.log("Patch query: " + query);
         for(var i in req.body) {
             if(i in query) {
                 query[i] = req.body[i];
@@ -92,11 +91,11 @@ router.post('/:lid/card', function(req, res){
 
         query.cards.push(req.body);
 
-        console.log('labels then members');
-        console.log(req.body.labels);
-        console.log(typeof req.body.labels);
-        console.log(req.body.members);
-        console.log(typeof req.body.members);
+        // console.log('labels then members');
+        // console.log(req.body.labels);
+        // console.log(typeof req.body.labels);
+        // console.log(req.body.members);
+        // console.log(typeof req.body.members);
         query.save(function(err,list){
             if(err){
                 console.log(err);
