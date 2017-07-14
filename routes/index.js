@@ -19,18 +19,22 @@ router.get('/', function(req, res, next) {
 
 router.get('/board/:bid', requireLogin, function(req, res, next) {
   //res.locals.user = req.user;
-
-
   LoginInfo.findOne({_id: req.user._id}).
       populate('boards').exec(function(err, user){
-          //console.log(boardsList);
-          res.render('index', { title: 'Prello',
-                                cssFile: '/stylesheets/style3.css',
-                                script: 'javascripts/script3.js',
-                                navCSS: '/stylesheets/navbar.css',
-                                bid: req.params.bid,
-                                boards: user.boards,
-                              });
+
+          Board.findOne({_id: req.params.bid}, function(err,board){
+              var boardTitle = board.title;
+              console.log(boardTitle);
+              res.render('index', { title: 'Prello',
+                                    cssFile: '/stylesheets/style3.css',
+                                    script: 'javascripts/script3.js',
+                                    navCSS: '/stylesheets/navbar.css',
+                                    bid: req.params.bid,
+                                    boards: user.boards,
+                                    boardTitle: boardTitle
+                                  });
+          });
+
       });
 });
 

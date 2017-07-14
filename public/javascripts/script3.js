@@ -42,6 +42,11 @@ $('.lol').on("submit", '.list-form', function(e){
 
 $('.lol').on('focusout', '.list-form', function(e){
         var listForm = this;
+        var title = $(listForm).children()[0].value;
+        //
+        // socket.emit('patchList', {bid:bid,
+        //                           title: title
+        //                           });
 
     $.ajax({
             url: serverURL + '/boardManager/' + bid,
@@ -282,13 +287,13 @@ function openMenu() {
 
         if($(".menu-list").css("display") === "none"){
 
-            $('.menu-list').show('slow');
+            $('.menu-list').show();
             $('.main').animate({'margin-right': '320px'},'fast');
         }
 
         else {
             //$('.menu-list').animate({width: '0'});
-            $('.menu-list').hide('slow');
+            $('.menu-list').hide();
             $('.main').animate({'margin-right': '0px'},'fast');
 
         }
@@ -684,9 +689,6 @@ $(document).ready(function(){
 
             });
         }
-
-
-
 
         modalLabel.appendChild(labelText);
         modalLabel.appendChild(selectedLabel);
@@ -1108,8 +1110,6 @@ $(document).ready(function(){
         });
 
         $('#' + card.id + ' .comment-button').on('click', function(e){
-            // var comment = document.createElement('li');
-            // comment.className += ' comment';
 
             var userName = $('meta[name=username]').attr("content");
 
@@ -1125,25 +1125,6 @@ $(document).ready(function(){
                                        userName: userName,
                                        commentText: $('#' + card.id + ' .comment-input').val(),
                                        commentForm: '#' + card.id + ' .comment-section ul'});
-            // var commentUser = document.createElement('h4');
-            // commentUser.innerHTML = userName;
-            // commentUser.className = ' comment-user inline';
-
-
-            // var commentDate = document.createElement('p');
-            //
-            // commentDate.innerHTML = dateTime;
-            // commentDate.className = ' comment-date inline';
-
-            // var commentText = document.createElement('p');
-            // commentText.innerHTML = commentInput;
-            // commentText.className += ' comment-text';
-
-            // comment.appendChild(commentUser);
-            // comment.appendChild(commentDate);
-            // comment.appendChild(commentText);
-            //
-            // $('#' + card.id + ' .comment-section ul').prepend(comment);
 
             $.ajax({
             url: serverURL + '/boardManager/' + bid,
@@ -1188,6 +1169,26 @@ $(document).ready(function(){
         });
         return card;
     }
+
+    $('.add-member').on('click', function(e){
+        e.preventDefault();
+
+        var memName = $('.mem-name').val();
+        console.log(memName);
+        if(memName != ''){
+            $.ajax({
+                url: serverURL + '/boardManager/' + bid + '/user',
+                type: 'POST',
+                data: {
+                    user: memName
+                },
+                dataType: 'json',
+                success: function(){
+                    $('.mem-name').val('');
+                }
+            });
+        }
+    });
 
     socket.on('addComment', function(msg){
         var comment = document.createElement('li');
@@ -1254,7 +1255,8 @@ $(document).ready(function(){
         var modalID = listOfList[title.listID][title.cardIndex].modalView.id;
 
         console.log(modalID);
-        $(modalID + ' .title-form').val(title.title);
+        console.log('previous value: ' + $('#' + modalID + ' .title').val());
+        $('#' + modalID + ' .title').val(title.title);
     });
 
     socket.on('patchDate', function(date){

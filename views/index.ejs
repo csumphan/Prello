@@ -1,6 +1,9 @@
 <%- include header.ejs %>
 
     <div class="main">
+
+        <h1 class='board-title'> <%= boardTitle %> </h1>
+
         <ul class="lol">
             <li id="addList" class="clickable">Add List</li>
         </ul>
@@ -8,14 +11,18 @@
     </div>
 
     <div class="menu-list">
-        <h2>Menu</h2>
-        <div class="member-list">
-        <h3 class="inline">Members:</h3>
-        <a href="#"><%= user.username %></a>
-        <a href="#">John Doe</a>
-        <a href="#">Darth Vader</a>
-        <a href="#" style="background-color: skyblue">Add Member</a>
-        </div>
+            <h2>Menu</h2>
+            <div class="member-list">
+            <a href="#"><%= user.username %></a>
+            <a href="#">John Doe</a>
+            <a href="#">Darth Vader</a>
+
+            <input class='mem-name'type='text' placeholder="Member Username">
+            <form class='add-mem-form'>
+                <button class='add-member'>Add Member</button>
+            </form>
+
+            </div>
 
         <h3>Change Background</h3>
         <h3>Activity</h3>

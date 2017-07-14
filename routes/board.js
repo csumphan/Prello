@@ -35,6 +35,35 @@ router.post('/', function(req, res){
     });
 });
 
+router.post('/:bid/user', function(req,res){
+    console.log(req.body.user);
+    LoginInfo.findOne({username: req.body.user}, function(err,user){
+        if(err) {
+            console.log(err);
+        }
+        var isin = false;
+        for(var x=0; x < user.boards.length; x++){
+            if(user.boards[x].toString() === req.params.bid){
+                isin = true;
+                break;
+            }
+        }
+
+        if(!isin){
+            user.boards.push(mongoose.Types.ObjectId(req.params.bid));
+            user.save(function(err, modUser){
+                if(err){
+                    console.log(err);
+                }
+                res.send('user added permission to board');
+            });
+        }
+        else{
+            res.send('user already member of board');
+        }
+    });
+});
+
 router.get('/', function(req, res){
   Board.find(function (err, board) {
     if (err) return console.log(err);
