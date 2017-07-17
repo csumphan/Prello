@@ -71,11 +71,17 @@ router.post('/checkemail', function(req,res){
                 if(err) {
                     console.log(err);
                 }
-                console.log('werwlerwegdfg');
-                console.log(hash.hashID);
 
-                res.render('resetlink', {
-                    url: '/reset/' + hash.hashID,
+                hash.hashID = md5(hash.hashID);
+
+                hash.save(function(err, newUser){
+                    if(err) {
+                        console.log(err);
+                    }
+
+                    res.render('resetlink', {
+                        url: '/reset/' + newUser.hashID,
+                    });
                 });
             });
 

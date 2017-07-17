@@ -54,6 +54,9 @@ app.use(session({
   secret: 'iqJ4O7uApJuefOEq7pUq',
   duration: 30 * 60 * 1000,
   activeDuration: 5 * 60 * 1000,
+  httpOnly: true,
+  secure: true,
+  ephemeral: true
 }));
 
 app.use(function(req, res, next) {
