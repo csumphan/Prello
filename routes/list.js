@@ -67,6 +67,12 @@ router.patch('/:lid', function(req, res){
                 query[i] = req.body[i];
             }
         }
+        
+        require('../socketio').getInstance().in(req.body.bid).emit('patchListTitle', {
+            title: req.body.title,
+            lid: req.body.lid,
+        });
+
         query.save(function(err, list){
             if(err){
                 console.log(err);

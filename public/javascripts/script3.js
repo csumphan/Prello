@@ -43,10 +43,12 @@ $('.lol').on("submit", '.list-form', function(e){
 $('.lol').on('focusout', '.list-form', function(e){
         var listForm = this;
         var title = $(listForm).children()[0].value;
+        var lid = $(listForm).parent().attr('id');
         //
         // socket.emit('patchList', {bid:bid,
         //                           title: title
         //                           });
+
 
     $.ajax({
             url: serverURL + '/boardManager/' + bid,
@@ -62,7 +64,9 @@ $('.lol').on('focusout', '.list-form', function(e){
                             url: serverURL + '/list/' +apiListID,
                             type: 'PATCH',
                             data: {
-                                title: $(listForm).children()[0].value
+                                title: $(listForm).children()[0].value,
+                                 bid: bid,
+                                 lid: lid,
                             },
                             dataType: 'json',
                             success: function(){}
@@ -387,6 +391,8 @@ function createMiniCard(listID,cardIndex) {
 $(document).ready(function(){
     var socket = io();
     socket.emit('joinBoard', {bid: bid});
+
+
 
     function createCard(listID, cardIndex){
 
@@ -900,7 +906,7 @@ $(document).ready(function(){
             socket.emit('deleteLabel', {bid: bid,
                                         miniID: mini,
                                         modalID: modal,
-                                        index: labelIndex})
+                                        index: labelIndex});
 
             // $(mini + " ul").children()[labelIndex].remove();
             // $(modal + ' .for-label').children()[labelIndex].remove();
@@ -1257,6 +1263,10 @@ $(document).ready(function(){
         console.log(modalID);
         console.log('previous value: ' + $('#' + modalID + ' .title').val());
         $('#' + modalID + ' .title').val(title.title);
+    });
+
+    socket.on('patchListTitle', function(l){
+        $('#' + l.lid + ' .list-title').val(l.title);
     });
 
     socket.on('patchDate', function(date){
