@@ -15,6 +15,7 @@ var users = require('./routes/users');
 var list = require('./routes/list');
 var board = require('./routes/board');
 var loginInfo = require('./routes/login');
+var resetPassword = require('./routes/resetPassword');
 var mongoose = require('mongoose');
 
 var LoginInfo = require('./models/loginInfo');
@@ -100,6 +101,7 @@ app.use('/boardManager', board);
 app.use('/', index);
 app.use('/users', users);
 app.use('/list', list);
+app.use('/reset', resetPassword);
 //app.use('/boards', boards);
 
 //route that handles getting/posting login info

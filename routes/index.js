@@ -25,7 +25,7 @@ router.get('/board/:bid', requireLogin, function(req, res, next) {
           Board.findOne({_id: req.params.bid}, function(err,board){
               var boardTitle = board.title;
               console.log(boardTitle);
-              res.render('index', { title: 'Prello',
+              res.render('board', { title: 'Prello',
                                     cssFile: '/stylesheets/style3.css',
                                     script: 'javascripts/script3.js',
                                     navCSS: '/stylesheets/navbar.css',
@@ -74,6 +74,12 @@ router.get('/noaccess', function(req,res,next){
         user: undefined,
         bid: undefined,
         boards: undefined,
+    });
+});
+
+router.get('/forgotpassword', function(req,res){
+    res.render('forgotpassword', {
+        emailError: ''
     });
 });
 

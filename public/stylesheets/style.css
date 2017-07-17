@@ -1,4 +1,7 @@
 body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     background-color: #0079BF;
     margin: 0;
     padding: 0;
@@ -24,11 +27,15 @@ h2 {
 
 .green-button {
     background-color: #5EB54A;
-    border-radius: 0.3em;
+    border-radius: 0.3em;    
     color: white;
     font-size: 14px;
     font-weight: 100;
     padding: 5px;
+}
+
+.green-button:hover {
+    cursor: pointer;
 }
 
 .textbox {
@@ -45,10 +52,11 @@ h2 {
 }
 
 .user-form {
-    width: 60%;
+    /*display: flex;*/
+    /*width: 60%;*/
     margin: 3em auto;
     margin-top: 1.5em;
-    padding-left: 15%;
+    /*padding-left: 15%;*/
 
 }
 .reg-login {
@@ -58,29 +66,71 @@ h2 {
     background-color: white;
     border: 1px dodgerblue solid;
     width: 250px;
-    padding: 1em;
+    padding: 2em;
     border-radius: 1em;
     text-align: center;
 }
 form {
     margin: auto;
     padding: 0 auto;
+}
+
+#forgot-btn {
+    border: none;
+    background-color: white;
+    text-decoration: underline;
+    color: gray;
+}
+
+#link-btn {
+    border: none;
+    font-size: 1em;
+    background-color: white;
+    text-decoration: underline;
+    color: gray;
+}
+
+#link-btn:hover {
+    color: #0079BF;
+    cursor: pointer;
+}
+
+.forgot {
 
 }
 
-.remember-me input {
-    margin: 0;
-    padding: 0;
-    display:inline-block;
+.email-error {
+    font-size: 0.7em;
+    color: red;
+
 }
 
-.remember-me p{
-    margin: 0;
-    padding: 0;
-    display: inline-block;
-    font-size: 10px;
+.direction {
+    text-align: left;
+    background-color: lightgray;
+    padding: 15px;
+    border-radius: 0.8em;
+}
+
+#forgot-btn:hover {
+    color: #0079BF;
+    cursor: pointer;
 }
 input {
     display: block;
     margin: 10px auto;
+}
+
+.password-error {
+    display: none;
+    font-size: 0.8em;
+    color: red;
+}
+
+.reset-confirm {
+    margin-top: 40px;
+    background-color: white;
+    text-align: center;
+    padding: 35px;
+    border-radius: 0.8em;
 }

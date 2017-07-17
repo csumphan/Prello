@@ -1,6 +1,11 @@
 var express = require('express');
 var mongoose = require('mongoose');
+
 var LoginInfo = require('../models/loginInfo');
+var UserHash = require('../models/userhash');
+
+//md5 hashing library
+var md5 = require('js-md5');
 
 var router = express.Router();
 
@@ -15,18 +20,30 @@ router.get('/', function(req, res){
 });
 
 router.post('/', function(req, res){
+
   var newAcc = new LoginInfo({
       username: req.body.username,
-      password: req.body.password,
+      password: md5(req.body.password),
       email: req.body.email,
   });
 
   newAcc.save(function(err,acc){
       if(err){
-          return console.log(err);
+          console.log(err);
       }
+      var newUserHash = new UserHash({
+          hashID: md5(acc.username),
+          userID: acc._id
+      });
 
-      res.json(acc);
+      newUserHash.save(function(err, user){
+          if(err){
+              console.log(err);
+          }
+          res.json(acc);
+      });
+
+
   });
 });
 
@@ -48,7 +65,7 @@ router.post('/signin', function(req,res){
             res.render('login',{});
         }
         else {
-            if(req.body.password === user.password){
+            if(md5(req.body.password) === user.password){
 
                 req.session.user = user;
                 res.redirect('/boards');
