@@ -10,6 +10,9 @@ var md5 = require('js-md5');
 
 var router = express.Router();
 
+//A hash is assigned when an account is created. Using username as
+//the value being hashed. 
+
 //this route hashes the new password and replace the old password.
 //this route also rehash the old hashID (makes old link expired)
 router.post('/', function(req,res){
@@ -59,6 +62,8 @@ router.get('/confirm', function(req, res){
 //route checks if email exists in collection.
 //if not a message is sent to client
 //otherwise create reset link page
+//rehashes the hash value before sending
+//(to ensure that after every post call a new unique hash is generated)
 router.post('/checkemail', function(req,res){
     LoginInfo.findOne({email: req.body.email}, function(err, user){
         if(!user){
