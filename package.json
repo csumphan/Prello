@@ -16,6 +16,8 @@
     "js-md5": "^0.5.0",
     "mongoose": "^4.11.0",
     "morgan": "~1.8.1",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
     "serve-favicon": "^2.4.3",
     "sessions": "0.0.2-7",
     "socket.io": "^2.0.3"
